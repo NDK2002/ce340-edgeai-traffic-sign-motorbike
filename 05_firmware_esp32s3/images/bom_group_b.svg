@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="880" height="500" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <g id="tile"><rect width="205" height="200" rx="10" fill="#f8fafc" stroke="#d5d9df"/></g>
+  </defs>
+  <rect width="880" height="500" fill="#ffffff"/>
+  <text x="440" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">Nhóm B — Ngoại vi cảnh báo: trông như thế nào?</text>
+  <text x="440" y="52" text-anchor="middle" font-size="12" fill="#666">Hình vẽ minh hoạ để nhận dạng khi mua — không phải ảnh sản phẩm thật</text>
+
+  <!-- B1 OLED -->
+  <g transform="translate(15,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#15803d"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">B1</text>
+    <rect x="50" y="34" width="105" height="80" rx="4" fill="#0b1f3a"/>
+    <rect x="62" y="56" width="81" height="50" fill="#000" stroke="#e5e7eb" stroke-width="2"/>
+    <text x="102" y="86" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">1.3"</text>
+    <g fill="#e5c07b"><circle cx="66" cy="41" r="3"/><circle cx="90" cy="41" r="3"/><circle cx="114" cy="41" r="3"/><circle cx="138" cy="41" r="3"/></g>
+    <g font-size="8" fill="#cfe0ff" text-anchor="middle"><text x="66" y="52">VCC</text><text x="90" y="52">GND</text><text x="114" y="52">SCL</text><text x="138" y="52">SDA</text></g>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">OLED 1.3" I2C (SH1106)</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">4 chân; mô tả ghi "SH1106", màu trắng;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">đọc thứ tự chân in trên module</text>
+  </g>
+
+  <!-- B4 buzzer passive vs active -->
+  <g transform="translate(230,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#15803d"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">B4</text>
+    <circle cx="60" cy="72" r="28" fill="#111"/>
+    <rect x="44" y="60" width="32" height="24" rx="2" fill="#15803d"/>
+    <circle cx="52" cy="72" r="2" fill="#e5c07b"/><circle cx="68" cy="72" r="2" fill="#e5c07b"/>
+    <circle cx="145" cy="72" r="28" fill="#111"/>
+    <rect x="131" y="66" width="28" height="12" rx="2" fill="#f5f5f4"/>
+    <text x="60" y="116" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803d">✓ passive</text>
+    <text x="145" y="116" text-anchor="middle" font-size="11" fill="#6b7280">active</text>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Buzzer passive 5V Ø12</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">lật ngược: passive lộ mạch xanh;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">active đáy kín nhựa đen</text>
+  </g>
+
+  <!-- B4b S8050 -->
+  <g transform="translate(445,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="40" height="18" rx="4" fill="#15803d"/><text x="28" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">B4b</text>
+    <path d="M78,40 h48 v38 h-48 Z" fill="#222"/>
+    <text x="102" y="64" text-anchor="middle" font-size="11" fill="#fff">S8050</text>
+    <line x1="88" y1="78" x2="88" y2="112" stroke="#9ca3af" stroke-width="3"/>
+    <line x1="102" y1="78" x2="102" y2="112" stroke="#9ca3af" stroke-width="3"/>
+    <line x1="116" y1="78" x2="116" y2="112" stroke="#9ca3af" stroke-width="3"/>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Transistor S8050</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">con nhựa đen 3 chân, in chữ S8050;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">cần 1 con, mua thêm 1 dự phòng</text>
+  </g>
+
+  <!-- B5 LED -->
+  <g transform="translate(660,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#15803d"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">B5</text>
+    <path d="M86,72 v-18 a16,16 0 0 1 32,0 v18 Z" fill="#fecaca" stroke="#dc2626" stroke-width="2" opacity="0.9"/>
+    <rect x="82" y="72" width="40" height="6" fill="#fecaca" stroke="#dc2626"/>
+    <line x1="94" y1="78" x2="94" y2="118" stroke="#9ca3af" stroke-width="3"/>
+    <line x1="110" y1="78" x2="110" y2="106" stroke="#9ca3af" stroke-width="3"/>
+    <text x="76" y="116" text-anchor="end" font-size="10" fill="#555">dài (+)</text>
+    <text x="126" y="106" font-size="10" fill="#555">ngắn (−)</text>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">LED đỏ siêu sáng 5 mm</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">vỏ trong suốt (water clear),</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">sáng lên mới thấy màu đỏ</text>
+  </g>
+
+  <!-- B6 nút nhấn -->
+  <g transform="translate(15,285)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#15803d"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">B6</text>
+    <rect x="76" y="56" width="52" height="52" rx="3" fill="#374151"/>
+    <circle cx="102" cy="82" r="14" fill="#111" stroke="#6b7280" stroke-width="2"/>
+    <line x1="82" y1="108" x2="82" y2="122" stroke="#9ca3af" stroke-width="3"/>
+    <line x1="122" y1="108" x2="122" y2="122" stroke="#9ca3af" stroke-width="3"/>
+    <line x1="82" y1="42" x2="82" y2="56" stroke="#9ca3af" stroke-width="3"/>
+    <line x1="122" y1="42" x2="122" y2="56" stroke="#9ca3af" stroke-width="3"/>
+    <text x="102" y="142" text-anchor="middle" font-size="12" font-weight="bold" fill="#111">(Tùy chọn) Nút nhấn</text>
+    <text x="102" y="160" text-anchor="middle" font-size="11" fill="#555">nút 6×6 mm cắm breadboard,</text>
+    <text x="102" y="175" text-anchor="middle" font-size="11" fill="#555">chọn loại nhấn-nhả (không giữ)</text>
+  </g>
+
+  <!-- Mẹo -->
+  <g transform="translate(230,285)">
+    <rect width="205" height="200" rx="10" fill="#f0fdf4" stroke="#86efac"/>
+    <text x="14" y="30" font-size="13" font-weight="bold" fill="#14532d">Dễ mua nhầm</text>
+    <g font-size="11" fill="#166534">
+      <text x="14" y="54">• Buzzer active / passive</text>
+      <text x="24" y="70">trông gần giống → xem đáy</text>
+      <text x="14" y="94">• OLED 1.3" ghi SSD1306</text>
+      <text x="24" y="110">vẫn dùng được, chỉ đổi driver</text>
+      <text x="14" y="134">• Transistor: đọc đúng chữ</text>
+      <text x="24" y="150">S8050 trên mặt phẳng</text>
+      <text x="14" y="174">• Nút: "nhấn nhả" khác</text>
+      <text x="24" y="190">"nhấn giữ" (có khoá)</text>
+    </g>
+  </g>
+</svg>

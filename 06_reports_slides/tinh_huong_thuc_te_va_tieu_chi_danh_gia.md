@@ -31,12 +31,12 @@ Tài liệu này liệt kê: phạm vi đề tài (làm gì / không làm gì), 
 | # | Tình huống | Vì sao khó | Cách xử lý | Chỉ số đo | Phụ trách |
 |---|---|---|---|---|---|
 | **T1** | **Biển ở xa → quá nhỏ** | Thu nhỏ cả khung hình về 160×160 thì biển ở 15 m chỉ còn ~6 pixel (xem [Mục 4](#4-phân-tích-cự-ly-và-kích-thước-biển)) | Cắt vùng góc trên bên phải từ ảnh độ phân giải cao (ROI) thay vì thu nhỏ cả khung | Cự ly nhận diện được xa nhất (m) | Duy (firmware ROI), Trung (input size) |
-| **T2** | **Thời gian phản ứng** | 40 km/h ≈ 11 m/giây: chậm 1 giây là đi qua biển | Đo toàn bộ vòng camera → AI → rung | Thời gian báo trước khi tới biển (giây) | Duy |
+| **T2** | **Thời gian phản ứng** | 40 km/h ≈ 11 m/giây: chậm 1 giây là đi qua biển | Đo toàn bộ vòng camera → AI → cảnh báo | Thời gian báo trước khi tới biển (giây) | Duy |
 | **T3** | **Biển không áp dụng cho xe máy** | "Cấm ô tô", biển có biển phụ "trừ xe máy" → báo là sai | Lớp "biển không liên quan" để **không** báo (cần chốt, [Mục 8](#8-quyết-định-cần-chốt-ở-buổi-sync)) | Số lần báo nhầm do biển không liên quan | Khang, Trung |
 | **T4** | **Ngược sáng** | Biển thành mảng tối, mất màu đỏ | Thêm ảnh ngược sáng vào dữ liệu; thử bật/tắt cân bằng sáng tự động của camera | Recall khi ngược sáng vs bình thường | Khang, Duy |
 | **T5** | **Ban đêm** | Biển phản quang sáng lên dưới đèn xe nhưng nền nhiễu, dễ nhòe | Tập kiểm thử riêng ban đêm | Recall ban đêm | Khang, Trung |
 | **T6** | **Bị che khuất** | Cây, xe tải, xe buýt, bảng quảng cáo | Đã có trong tăng cường dữ liệu; đo lại trên đường | Recall khi che < 40% | Khang |
-| **T7** | **Nhòe do rung** | Ổ gà, đường xấu, giá đỡ rung | Giá đỡ kẹp nhôm chống rung; giảm thời gian phơi sáng camera | Recall đường đẹp vs đường xấu | Duy |
+| **T7** | **Nhòe do rung** | Ổ gà, đường xấu, giá đỡ rung | Dán cố định camera khi gắn tạm; giảm thời gian phơi sáng camera | Recall đường đẹp vs đường xấu | Duy |
 | **T8** | **Camera bị che / mờ** | Áo mưa, giọt nước, bụi | Phần mềm đo độ nét + độ sáng ảnh; mờ/tối liên tục vài giây → báo "Camera bị che" lên OLED | Thời gian phát hiện camera bị che (giây) | Duy, Hôn |
 | **T9** | **Báo nhầm gây phiền** | Thấy biển của làn khác, biển dán trên xe buýt/xe tải, vật tròn đỏ giống biển | Chỉ báo khi thấy biển ở nhiều khung hình liên tiếp; mỗi biển báo 1 lần | **Số lần báo nhầm / km** | Trung, Duy |
 
@@ -70,15 +70,16 @@ Biển tròn cỡ chuẩn đường đô thị đường kính khoảng **70 cm*
 
 | Kênh | Vai trò | Kiểu báo |
 |---|---|---|
-| **Motor rung ở tay nắm** | Chính — chỉ người lái cảm nhận, không làm ồn người xung quanh, vẫn dùng được khi gió to / đeo găng / trùm áo mưa | Biển cấm: 3 nhịp dồn dập · Tốc độ, hiệu lệnh, cảnh báo: 1 nhịp dài |
-| **Buzzer passive** (âm lượng vừa) | Phụ — có nút tắt | Cùng nhịp với rung |
-| **OLED 1.3" + LED** | Liếc để xác nhận | Icon biển + chữ ngắn; biển tốc độ hiện cố định đến khi gặp biển tốc độ mới |
+| **OLED 1.3" + LED đỏ siêu sáng** | **Chính** | OLED: icon biển + chữ ngắn; biển tốc độ hiện cố định đến khi gặp biển tốc độ mới. LED: biển cấm = nháy nhanh · biển khác = sáng 1 lần |
+| **Buzzer passive** (âm lượng vừa) | Phụ — có nút tắt (tùy chọn) | Biển cấm: 3 tiếng dồn dập · Tốc độ, hiệu lệnh, cảnh báo: 1 tiếng |
+
+*Nhóm đã bỏ motor rung ở tay nắm (giảm lắp ráp để tập trung vào tối ưu mô hình và đo trên chip). Hạn chế: khi gió to và đội mũ bảo hiểm, buzzer có thể khó nghe — ghi rõ trong phần giới hạn của báo cáo.*
 
 **Quy tắc chống phiền (T9):**
 1. Chỉ báo khi cùng một biển xuất hiện ở **≥ 3 khung hình liên tiếp** với độ tin cậy ≥ ngưỡng (ngưỡng chốt sau khi chạy thử).
 2. Mỗi biển chỉ báo **1 lần**; không báo lại cùng lớp trong ~10 giây.
 3. Biển không áp dụng cho xe máy (T3) → **không báo**.
-4. Camera bị che (T8) → hiện "Camera bị che" trên OLED + 1 nhịp rung dài, **không** im lặng như thể không có biển.
+4. Camera bị che (T8) → hiện "Camera bị che" trên OLED + LED sáng liên tục, **không** im lặng như thể không có biển.
 
 ---
 
@@ -90,19 +91,32 @@ Biển tròn cỡ chuẩn đường đô thị đường kính khoảng **70 cm*
 | **Recall theo từng điều kiện** | Tách tập kiểm thử: ngày / ngược sáng / đêm / sau mưa / bị che | Báo cáo từng nhóm, không gộp |
 | **Cự ly nhận diện xa nhất** | Chạy thử, ghi khoảng cách lúc thiết bị báo (đánh dấu mốc trên đường) | ≥ 15 m |
 | **Thời gian báo trước biển** | Cự ly ÷ vận tốc | ≥ 1 giây ở 40 km/h |
-| **Độ trễ toàn hệ thống** | Từ lúc chụp ảnh tới lúc motor rung (log thời gian từng khâu) | < 150 ms (đề cương) |
+| **Độ trễ toàn hệ thống** | Từ lúc chụp ảnh tới lúc có kết quả (firmware in thời gian từng khâu ở bước `pipeline`) | Ghi số đo thật — mục tiêu trong đề cương đang chờ chốt lại (Mục 8) |
 | **Số lần báo nhầm / km** | Đếm trên cung đường thử | Càng thấp càng tốt — ghi số thật |
 | **Tỉ lệ bỏ sót biển** | Biển có trên đường nhưng không báo / tổng số biển | Ghi số thật |
 | Dòng tiêu thụ (mA), nhiệt độ chip | USB tester, log nhiệt độ | Chạy 30 phút liên tục không reset |
 
 ---
 
-## 7. Quy trình chạy thử ngoài đường
+## 7. Cách demo và chạy thử
+
+### 7.1 Demo chính: phát lại video quay từ xe
+
+Không làm bản gắn xe chống nước, nên phần lớn đánh giá làm **trên bàn** với video thật:
+
+1. Một người lái, một người ngồi sau cầm **điện thoại quay video** các tuyến đường TP.HCM có biển trong 12 lớp, theo ma trận điều kiện ở bước 2 bên dưới. Ghi lại tốc độ và vị trí các biển.
+2. Đặt bo ESP32-S3 cố định trên bàn, camera hướng vào màn hình đang **phát lại video** đó (tắt đèn phòng để giảm phản chiếu).
+3. Thiết bị nhận diện và cảnh báo như khi chạy thật; đếm báo đúng / bỏ sót / báo nhầm theo bảng ở bước 5.
+4. Cùng một video chạy lại với từng model (FP32 / INT8 / pruned) → so sánh các model **trong cùng điều kiện**.
+
+*Lưu ý khi viết báo cáo:* ảnh chụp qua màn hình bị đổi độ sáng, màu và có thể có sọc nhiễu, nên kết quả này là **xấp xỉ** cho cảnh thật. Ghi rõ là phát lại video, kèm một clip ngắn gắn tạm trên xe (trời khô, cuối Tuần 7) để đối chứng.
+
+### 7.2 Quy trình quay video / chạy thử ngoài đường
 
 1. **Chọn 1 cung đường cố định** (2–5 km) có sẵn nhiều biển thuộc 12 lớp; lập danh sách biển và vị trí trước.
 2. **Ma trận điều kiện** — chạy cùng cung đường ở: ban ngày · sáng sớm/chiều (ngược sáng) · tối · sau mưa.
-3. **Hai người:** người lái chỉ tập trung lái; người ngồi sau ghi chép và quay video. Thử ở bãi trống trước khi ra đường.
-4. Thẻ microSD lưu ảnh camera → gửi Khang bổ sung dữ liệu thật.
+3. **Hai người:** người lái chỉ tập trung lái; người ngồi sau quay video (điện thoại) và ghi chép. Clip gắn tạm thiết bị chỉ làm khi trời khô, thử ở bãi trống trước.
+4. Thẻ microSD: firmware ghi số liệu đo ra `bench.csv`; video điện thoại → cắt khung hình gửi Khang bổ sung dữ liệu thật.
 5. Ghi kết quả vào bảng:
 
 | Lần chạy | Ngày | Điều kiện | Tốc độ TB | Số biển trên đường | Báo đúng | Bỏ sót | Báo nhầm | Cự ly báo TB (m) | Ghi chú |
@@ -120,3 +134,13 @@ Biển tròn cỡ chuẩn đường đô thị đường kính khoảng **70 cm*
 | Q3 | Mục tiêu FPS và số khung xác nhận | Trung, Sơn, Duy | ~5 FPS, xác nhận 3 khung |
 | Q4 | Ngưỡng "camera bị che" | Duy, Hôn | Chốt sau khi có ảnh thật từ bo |
 | Q5 | Tập kiểm thử tách theo điều kiện (ngày/ngược sáng/đêm/sau mưa/che khuất) | Khang, Trung | Có — để báo cáo Recall theo từng điều kiện |
+
+### 8.1 Đề xuất lớn đang chờ cả nhóm chốt (chưa sửa tài liệu nào)
+
+| # | Đề xuất | Ảnh hưởng tới |
+|---|---|---|
+| P1 | Đổi bài toán trên chip từ **YOLO detection** sang **classification trên vùng ROI**; YOLO giữ làm baseline chạy trên GPU | Trung, Sơn, Duy · Nội dung 3–4 đề cương |
+| P2 | Thêm **GTSRB** làm bộ dữ liệu so sánh với các bài báo | Khang, Trung |
+| P3 | Đối chiếu lại mã 12 biển theo **QCVN 41:2024/BGTVT** (thay QCVN 41:2019 từ 01/01/2025) | Khang · `classes.yaml`, đề cương |
+| P4 | Sửa mục tiêu FPS / độ trễ trong đề cương (< 150 ms, ≥ 10–15 FPS) cho khớp con số thực tế khoảng 5 FPS | Cả nhóm · đề cương |
+| P5 | Thay các trích dẫn trong đề cương chưa xác minh được bằng nguồn có tác giả / DOI | Hôn · đề cương |

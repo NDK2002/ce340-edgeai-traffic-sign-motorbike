@@ -45,7 +45,9 @@ Không shop nào ở trên ghi sơ đồ chân camera, nên vẫn phải kiểm 
 
 ## 2. BOM — danh sách mua
 
-Chia 4 nhóm theo thứ tự mua: **A–B mua ngay** (để test trên bàn ở Tuần 5–6), **C mua khi chốt lắp lên xe** (Tuần 6), **D là dụng cụ đo** (mượn được thì mượn). Lý do của từng món ở nhóm B–C nằm trong [Mục 5](#5-yếu-tố-thực-tế-khi-chạy-xe-máy).
+**Hướng đã chốt: bản tối giản trên breadboard.** Nhóm tập trung vào phần thầy chấm nặng nhất — **tối ưu mô hình và đo trên chip** — nên giảm tối đa phần lắp ráp: không làm hộp chống nước, không motor rung. Thiết bị chỉ gắn tạm lên xe để quay clip ngắn khi trời khô; demo chính là phát lại video đường phố trước camera đặt trên bàn (xem [Mục 5](#5-lắp-tạm-và-cách-demo)).
+
+Chia 4 nhóm: **A–B mua ngay** (test trên bàn Tuần 5–6), **C mua khi gắn tạm lên xe** (cuối Tuần 7), **D là dụng cụ đo** (mượn được thì mượn).
 
 ### A. Mạch chính
 
@@ -58,40 +60,60 @@ Chia 4 nhóm theo thứ tự mua: **A–B mua ngay** (để test trên bàn ở 
 | # | Linh kiện | SL | Ghi chú chọn mua | Giá ước tính |
 |---|---|:---:|---|---:|
 | B1 | **OLED 1.3" I2C 128×64, chip SH1106, màu trắng** | 1 | Loại **4 chân I2C** (không lấy loại SPI 7 chân). Chọn **màu trắng một màu** — sáng và tương phản tốt hơn loại 2 màu vàng/xanh. ⚠️ Nhiều module 1.3" xếp chân **VCC–GND–SCL–SDA** (ngược với 0.96") → đọc chữ in trên module trước khi cắm | 80–120k |
-| B2 | **Motor rung đồng xu 3V** (coin vibration motor, Ø10 mm, có dây sẵn) | 2 | **Kênh cảnh báo chính**: dán ở tay nắm, chỉ người lái cảm nhận — không làm ồn người xung quanh, vẫn cảm được khi gió to, đeo găng, trùm áo mưa. Không dán trong hộp camera (rung làm nhòe ảnh) | 10–20k |
-| B3 | Diode **1N4148** (hoặc 1N4007) | 3 | Gắn ngược song song motor để bảo vệ transistor khi motor tắt | 3k |
-| B4 | **Buzzer passive 5V** Ø12 mm | 2 | Kênh phụ: phát được nhiều kiểu tiếng khác nhau (cấm: dồn dập; tốc độ: 1 tiếng), âm lượng vừa, hướng về người lái. Có nút tắt | 5–10k |
-| B4b | Transistor NPN **S8050** + điện trở 1kΩ | 5 | "Công tắc" cho motor và buzzer (mỗi thứ 1 con) | 10k |
-| B5 | **LED đỏ siêu sáng 5mm** + điện trở 220–330Ω | 5 | Loại siêu sáng (super bright) để nhìn thấy cả ban ngày, nằm trong vùng mắt liếc thấy | 5–10k |
-| B6 | Nút nhấn 12mm **có nắp chống nước** | 1 | Bấm được khi đeo găng tay để tắt còi | 10–20k |
+| B4 | **Buzzer passive 5V** Ø12 mm | 2 | Kênh phụ: phát được nhiều kiểu tiếng (cấm: dồn dập; tốc độ: 1 tiếng), âm lượng vừa. Có nút tắt | 5–10k |
+| B4b | Transistor NPN **S8050** + điện trở 1kΩ | 2 | "Công tắc" để GPIO 3.3V bật buzzer 5V (1 con dùng, 1 con dự phòng) | 5k |
+| B5 | **LED đỏ siêu sáng 5mm** + điện trở 220–330Ω | 5 | Cùng OLED làm kênh cảnh báo chính; loại siêu sáng để nhìn thấy cả ban ngày | 5–10k |
+| B6 | *(Tùy chọn)* Nút nhấn 6×6 mm hoặc 12 mm | 1 | Tắt cảnh báo; loại nhấn-nhả | 5–10k |
 
-### C. Lắp lên xe máy (yếu tố thực tế)
+![Hình minh hoạ các linh kiện nhóm B để nhận dạng khi mua](images/bom_group_b.svg)
+
+<details>
+<summary><b>Từ khoá tìm trên Shopee — nhóm B</b> (bấm để mở)</summary>
+
+| # | Từ khoá | Tìm nhanh |
+|---|---|---|
+| B1 | `oled 1.3 inch i2c sh1106 trang` | [Shopee](https://shopee.vn/search?keyword=oled%201.3%20inch%20i2c%20sh1106) |
+| B4 | `buzzer thu dong 5v passive 12mm` | [Shopee](https://shopee.vn/search?keyword=buzzer%20passive%205v%2012mm) |
+| B4b | `transistor s8050 to92` | [Shopee](https://shopee.vn/search?keyword=transistor%20s8050) |
+| B5 | `led do sieu sang 5mm trong suot` | [Shopee](https://shopee.vn/search?keyword=led%20do%20sieu%20sang%205mm) |
+| B6 | `nut nhan 6x6` | [Shopee](https://shopee.vn/search?keyword=nut%20nhan%206x6) |
+
+</details>
+
+### C. Gắn tạm lên xe (quay clip ngắn khi trời khô)
 
 | # | Linh kiện | SL | Ghi chú chọn mua | Giá ước tính |
 |---|---|:---:|---|---:|
-| C1 | **Hộp điện kín nước IP65**, màu trắng/xám, ~100×68×50 mm | 1 | Kín mưa; màu sáng để đỡ nóng khi phơi nắng | 40–80k |
-| C2 | Ốc siết cáp **PG7** | 2 | Luồn cáp USB vào hộp mà không hở nước | 5–10k |
-| C3 | Tấm **mica trong 2mm** + keo silicon | 1 | Cửa sổ cho camera và OLED | 10–20k |
-| C4 | **Giá đỡ điện thoại xe máy loại kẹp nhôm, chống rung** (có khớp xoay) | 1 | Loại nhựa rẻ rung lắc mạnh làm ảnh camera bị nhòe. Khớp xoay để chỉnh camera lệch về lề phải | 100–200k |
-| C5 | Bo **đục lỗ (perfboard)** 5×7 cm + hàng rào cái (female header) + dây điện mềm | 1 bộ | Bản gắn xe **không dùng breadboard**: rung xe làm dây jumper tuột. Hàn ngoại vi lên perfboard, bo ESP32 cắm vào header cái | 30–50k |
-| C6 | Băng keo **3M VHB** 2 mặt + mút xốp EVA | 1 | Cố định bo + cáp camera, giảm rung | 30–50k |
-| C7 | Tản nhiệt nhôm nhỏ (~14×14 mm) + keo tản nhiệt dán | 2 | Dán lên module ESP32 — hộp kín + nắng làm nóng chip | 10–20k |
-| C8 | Gói hút ẩm silica gel nhỏ | 3 | Bỏ trong hộp, chống đọng hơi nước làm mờ camera | 5k |
-| C9 | Cáp USB-C **1,5 m loại tốt** (lõi to) + dây rút nhựa | 1 | Đi dây từ cốp xe lên ghi-đông; cáp rẻ lõi nhỏ sụt áp làm bo reset | 50–80k |
-| C10 | Sạc dự phòng 10.000 mAh, 5V/2A | 1 | Đặt trong cốp/túi. Có thể dùng sẵn của nhóm | (có sẵn) |
-| C11 | *(Tùy chọn)* Mạch hạ áp **12V→5V 3A có lọc nhiễu** | 1 | Chỉ khi lấy điện ắc-quy xe — điện xe máy nhiễu khi đề máy, dễ làm bo reset. **Không khuyến khích** cho đồ án | 30–50k |
+| C1 | **Hộp nhựa nhỏ có nắp** (~100×70×40 mm, hộp linh kiện hoặc hộp đựng đồ ăn) | 1 | Chỉ để che bụi và giữ breadboard khi gắn tạm — **không cần kín nước** | 15–40k |
+| C2 | Giá kẹp điện thoại xe máy | 1 | **Dùng đồ có sẵn** của nhóm; kẹp hộp như kẹp điện thoại | (có sẵn) |
+| C3 | Băng keo **3M VHB** 2 mặt + dây rút nhựa | 1 | Dán breadboard và cáp camera vào hộp, cố định cáp USB dọc ghi-đông | 30–50k |
+| C4 | Cáp USB-C **1,5 m lõi tốt** (ghi 2A–3A) | 1 | Cáp rẻ lõi nhỏ sụt áp làm bo reset khi camera + AI chạy cùng lúc | 50–80k |
+| C5 | Sạc dự phòng 10.000 mAh, 5V/2A | 1 | Đặt trong cốp/túi. Dùng cái sẵn có của nhóm | (có sẵn) |
+
+![Hình minh hoạ các linh kiện nhóm C để nhận dạng khi mua](images/bom_group_c.svg)
+
+<details>
+<summary><b>Từ khoá tìm trên Shopee — nhóm C</b> (bấm để mở)</summary>
+
+| # | Từ khoá | Tìm nhanh |
+|---|---|---|
+| C1 | `hop nhua linh kien co nap 100x70` | [Shopee](https://shopee.vn/search?keyword=hop%20nhua%20linh%20kien%20co%20nap) |
+| C3 | `bang keo 3m vhb` · `day rut nhua` | [Shopee](https://shopee.vn/search?keyword=bang%20keo%203m%20vhb) |
+| C4 | `cap usb type c 1.5m 3a` | [Shopee](https://shopee.vn/search?keyword=cap%20usb%20type%20c%201.5m%203a) |
+
+</details>
 
 ### D. Đo đạc & dụng cụ
 
 | # | Linh kiện | SL | Ghi chú | Giá ước tính |
 |---|---|:---:|---|---:|
-| D1 | **USB tester** đo dòng/áp (KWS-V20 / UM25C) | 1 | Bắt buộc cho số liệu mA trong báo cáo | 80–250k |
-| D2 | Thẻ **microSD 8–32 GB** | 1 | Ghi ảnh camera trên đường → dữ liệu thật cho Khang | 60–100k |
-| D3 | Breadboard 400 lỗ + dây jumper | 1 bộ | Chỉ để test trên bàn | 40–60k |
-| D4 | Cáp Type-C **có truyền dữ liệu** | 2 | Nạp code; cáp chỉ sạc sẽ không nhận cổng COM | 30–60k |
-| D5 | Mỏ hàn + thiếc, súng bắn keo nến | — | Mượn phòng lab nếu được | (mượn) |
+| D1 | **USB tester** đo dòng/áp (KWS-V20 / UM25C) | 1 | Bắt buộc cho số liệu mA trong báo cáo (đọc trong lúc firmware chạy soak 30 phút) | 80–150k |
+| D2 | Thẻ **microSD 8–32 GB** | 1 | Firmware ghi số liệu ra `/sdcard/bench.csv`; sau này lưu thêm ảnh camera | 50–80k |
+| D3 | Breadboard 400 lỗ + dây jumper **đực–đực và cái–đực** | 1 bộ | Bo ESP32-S3 rộng, cắm lên breadboard 400 có thể che hết lỗ hai bên → dùng dây **cái–đực** nối thẳng từ chân bo ra breadboard | 50–80k |
+| D4 | Cáp Type-C **có truyền dữ liệu** | 1–2 | Nạp code; cáp chỉ sạc sẽ không nhận cổng COM | 30–50k |
+| D5 | Súng bắn keo nến | — | Chấm keo giữ dây jumper khi gắn tạm. Mượn nếu được | (mượn) |
 
-**Tổng ước tính:** khoảng **1,1 – 1,9 triệu ₫** (A+B ~0,55–0,8 triệu; C ~0,3–0,6 triệu; D ~0,2–0,5 triệu).
+**Tổng ước tính:** khoảng **0,8 – 1,3 triệu ₫** (A ~0,4–0,6 triệu cho 2 bo; B ~0,1–0,17 triệu; C ~0,1–0,17 triệu; D ~0,2–0,36 triệu). Nếu chỉ mua 1 bo thì còn khoảng **0,6–1,0 triệu ₫**.
 
 ---
 
@@ -115,14 +137,13 @@ Chia 4 nhóm theo thứ tự mua: **A–B mua ngay** (để test trên bàn ở 
 | OLED 1.3" SDA | `41` | Nối SDA của OLED |
 | OLED 1.3" SCL | `42` | Nối SCL của OLED |
 | OLED 1.3" VCC / GND | `3V3` / `GND` | Cấp 3.3V. **Đọc thứ tự chân in trên module** — loại 1.3" thường là `VCC GND SCL SDA` |
-| Motor rung (qua S8050) | `1` | GPIO1 → R 1kΩ → B của S8050; E → GND; C → dây (−) motor; dây (+) motor → `3V3`. Diode 1N4148 song song motor, **vạch trắng (catốt) về phía `3V3`** |
 | Buzzer passive (qua S8050) | `14` | GPIO14 (xuất xung PWM để tạo tiếng) → R 1kΩ → B của S8050; E → GND; C → chân (−) buzzer; chân (+) buzzer → `5V` |
 | LED cảnh báo | `21` | GPIO21 → R 330Ω → LED (+); LED (−) → GND |
 | Nút nhấn (tùy chọn: tắt cảnh báo) | `47` | Nút nối GPIO47 ↔ GND, bật pull-up nội |
 
 ![Sơ đồ đấu nối OLED, buzzer, LED, nút nhấn vào ESP32-S3-CAM](images/wiring_diagram.svg)
 
-**Đọc sơ đồ:** mỗi đường màu là một sợi dây jumper. Ký hiệu ⏚ nghĩa là nối về chân `GND` của bo (trên breadboard: cắm chung vào hàng `−`). Motor và buzzer không cắm thẳng vào GPIO vì chân GPIO chỉ chịu dòng nhỏ (motor rung ăn khoảng 60–90 mA); transistor S8050 làm "công tắc điện tử": GPIO bật nhẹ chân B → dòng lớn chạy qua motor/buzzer. Diode cạnh motor hấp thụ xung điện ngược sinh ra khi motor tắt.
+**Đọc sơ đồ:** mỗi đường màu là một sợi dây jumper. Ký hiệu ⏚ nghĩa là nối về chân `GND` của bo (trên breadboard: cắm chung vào hàng `−`). Buzzer không cắm thẳng vào GPIO vì chân GPIO chỉ ra 3.3V và chịu dòng nhỏ; transistor S8050 làm "công tắc điện tử": GPIO14 bật nhẹ chân B → dòng 5V chạy qua buzzer.
 
 > ℹ️ **Ghi chú cho Hôn (`[H2]`):** OLED 1.3" dùng chip **SH1106**, không phải SSD1306. Trong thư viện (U8g2 / Adafruit), chọn driver SH1106 128×64 — nếu dùng nhầm driver SSD1306, hình sẽ bị lệch 2 cột và có viền nhiễu bên phải. Địa chỉ I2C thường là `0x3C`.
 >
@@ -133,19 +154,16 @@ Chia 4 nhóm theo thứ tự mua: **A–B mua ngay** (để test trên bàn ở 
 
 ```mermaid
 flowchart LR
-    PB["🔋 Sạc dự phòng 5V/2A<br/>(phương án demo)"] --> T["USB tester<br/>đo mA"]
-    AQ["Ắc-quy xe 12V<br/>(phương án gắn xe)"] -.-> BK["Mạch hạ áp<br/>12V → 5V"] -.-> T
+    PB["🔋 Sạc dự phòng 5V/2A<br/>hoặc cổng USB máy tính"] --> T["USB tester<br/>đo mA"]
     T -->|"cáp USB-C"| B["Bo ESP32-S3-CAM"]
     B -->|"3.3V"| O["OLED 1.3 inch"]
     B -->|"5V"| Z["Buzzer passive (+)"]
-    B -->|"3.3V"| V["Motor rung ở tay nắm"]
     B -->|"nội bộ"| C["Camera OV2640"]
+    B -->|"nội bộ"| SD["Thẻ microSD<br/>bench.csv"]
     B -->|"GPIO21"| L["LED"]
 ```
 
-*Đường nét đứt = phương án tùy chọn. Mọi linh kiện dùng **chung GND** với bo.*
-
-**Không bao giờ** nối 12V trực tiếp vào bo. Luôn đo áp ra của mạch hạ áp bằng đồng hồ trước khi cắm bo.
+*Mọi linh kiện dùng **chung GND** với bo. Không lấy điện ắc-quy xe — chỉ dùng nguồn 5V qua USB.*
 
 ---
 
@@ -161,43 +179,27 @@ flowchart LR
 
 ---
 
-## 5. Yếu tố thực tế khi chạy xe máy
+## 5. Lắp tạm và cách demo
 
-Thiết bị chạy ổn trên bàn chưa chắc chạy ổn trên xe. Bảng dưới liệt kê những gì xe máy ở Việt Nam "làm khó" **phần cứng** và cách xử lý — mỗi cách xử lý tương ứng một món trong BOM. Các tình huống về **nhận diện** (biển ở xa, báo nhầm, camera bị che, ngược sáng…) và cách đo nằm ở [tinh_huong_thuc_te_va_tieu_chi_danh_gia.md](../06_reports_slides/tinh_huong_thuc_te_va_tieu_chi_danh_gia.md).
+**Phạm vi:** không làm bản gắn xe chống nước. Thiết bị chạy chính trên bàn để đo; chỉ gắn tạm lên xe **khi trời khô, cuối Tuần 7**, để quay một clip ngắn minh hoạ. Các tình huống về **nhận diện** (biển ở xa, báo nhầm, ngược sáng…) và cách đo nằm ở [tinh_huong_thuc_te_va_tieu_chi_danh_gia.md](../06_reports_slides/tinh_huong_thuc_te_va_tieu_chi_danh_gia.md).
 
-| Yếu tố | Ảnh hưởng | Cách xử lý | BOM |
-|---|---|---|---|
-| **Rung lắc** (đường xấu, ổ gà, động cơ) | Dây jumper tuột; cáp camera dẹt tuột; ảnh bị nhòe | Hàn lên perfboard thay breadboard; dán bo + cáp camera bằng VHB; giá đỡ kẹp nhôm chống rung | C4, C5, C6 |
-| **Gió + tiếng máy + mũ bảo hiểm** (40–50 km/h) | Buzzer nhỏ gần như không nghe thấy; còi to (~95 dB) thì làm phiền, làm người xung quanh giật mình, dễ bị nhầm là còi xe | **Motor rung ở tay nắm làm kênh chính** (chỉ người lái cảm nhận); buzzer passive âm lượng vừa làm kênh phụ, có nút tắt; LED siêu sáng. Kiểu rung/tiếng khác nhau: biển cấm = rung dồn dập, biển thường = 1 nhịp | B2, B4, B5, B6 |
-| **Báo nhầm, báo liên tục** | Người dùng khó chịu và tắt thiết bị | Mỗi biển chỉ báo 1 lần; phải thấy biển ở nhiều khung hình liên tiếp mới báo; biển tốc độ hiện cố định trên OLED đến khi gặp biển mới | (phần mềm) |
-| **Nắng chói** | OLED khó đọc giữa trưa | OLED 1.3" màu trắng, đặt độ sáng tối đa; làm mái che nhỏ phía trên màn; nội dung màn hình to, ít chữ | B1, C3 |
-| **Mưa** | Mưa nhỏ: giọt nước trên kính làm AI đoán sai. Mưa lớn: người lái trùm áo mưa che luôn thiết bị, hoặc chuyển sang đi ô tô | **Phạm vi đề tài: mưa phùn / đường ướt sau mưa.** Hộp IP65 + ốc siết cáp; cửa sổ mica nghiêng cho nước trôi. Phần mềm tự phát hiện "camera bị che / mờ" và báo lên OLED thay vì im lặng | C1, C2, C3 |
-| **Nóng** (phơi nắng, hộp kín) | Chip nóng → tự giảm tốc hoặc reset | Hộp màu sáng; tản nhiệt dán lên module; đo nhiệt độ chip trong log khi chạy lâu | C1, C7 |
-| **Hơi nước** (sáng sớm, sau mưa) | Đọng sương trong hộp, mờ camera | Gói hút ẩm trong hộp | C8 |
-| **Nguồn điện** | Cáp dài lõi nhỏ sụt áp → bo reset khi camera + AI chạy cùng lúc; điện ắc-quy nhiễu khi đề máy | Dùng sạc dự phòng trong cốp + cáp 1,5 m lõi to; đo dòng bằng USB tester | C9, C10, D1 |
-| **Ghi-đông xoay khi đánh lái** | Camera quay theo tay lái, lúc rẽ sẽ nhìn lệch hướng xe | Chấp nhận được khi chạy thẳng (phần lớn thời gian); nếu xe có mặt nạ cố định thì gắn ở đó tốt hơn | C4 |
-| **Biển báo ở lề phải, phía trên** | Camera nhìn thẳng sẽ để biển ở mép ảnh | Dùng khớp xoay của giá đỡ: nghiêng camera lệch phải ~10–15° và ngẩng lên nhẹ | C4 |
-| **Mất cắp / dắt xe gửi** | Dễ bị lấy khi để xe | Giá đỡ tháo nhanh, mang hộp theo người | C4 |
+### 5.1 Demo chính: phát lại video đường phố trước camera
 
-![Hộp thiết bị gắn ghi-đông nhìn từ bên hông xe](images/enclosure_mount.svg)
+1. Một người lái xe, một người ngồi sau cầm **điện thoại quay video** các tuyến đường TP.HCM có biển trong 12 lớp (ban ngày, ngược sáng, chiều tối, sau mưa).
+2. Trên bàn: đặt bo ESP32-S3 cố định, camera hướng vào màn hình laptop/màn hình lớn đang **phát lại video** đó.
+3. Thiết bị nhận diện và cảnh báo trên OLED + LED + buzzer như khi chạy thật. Quay lại cảnh này để đưa vào slide.
 
-### 5.1 Các bước lắp (Tuần 6)
+Cách này lặp lại được nhiều lần với cùng một video, nên so sánh được các model (FP32 / INT8 / pruned) trong **cùng điều kiện**. Lưu ý khi đánh giá: màn hình có độ sáng và độ nhoè khác cảnh thật, nên ghi rõ đây là phát lại.
 
-1. Test toàn bộ trên breadboard trước (Tuần 5–6).
-2. Hàn ngoại vi (OLED, buzzer, 2 transistor, diode, LED, nút) lên perfboard; motor rung nối ra ngoài bằng dây 2 lõi, dán ở tay nắm trái bằng băng keo vải / ống co nhiệt; bo ESP32 cắm vào hàng rào cái để tháo ra nạp code được.
-3. Khoét hộp: lỗ camera phía trước, lỗ OLED + LED phía sau, lỗ ốc siết cáp phía dưới. Dán mica bằng silicon.
-4. Dán mút EVA đáy hộp, dán bo + cáp camera bằng VHB, dán tản nhiệt, bỏ gói hút ẩm.
-5. Gắn hộp vào giá kẹp; chỉnh camera lệch phải và ngẩng nhẹ; đi cáp USB dọc ghi-đông bằng dây rút, **không vướng tay phanh, tay ga và không bị kéo căng khi đánh lái hết cỡ**.
-6. Rung thử: lắc mạnh hộp bằng tay vài phút, kiểm tra log không reset, camera không tuột.
+### 5.2 Gắn tạm lên xe (cuối Tuần 7, trời khô)
 
-### 5.2 Chạy thử ngoài đường an toàn
-
-- Thử trước ở **bãi trống / đường vắng**, tốc độ thấp, rồi mới ra đường thật.
-- **Hai người**: một người lái tập trung lái, một người ngồi sau theo dõi log/quay video. Người lái **không** nhìn chằm chằm màn hình hay chỉnh thiết bị khi xe đang chạy.
-- Chạy cung đường cố định có sẵn các biển trong 12 lớp, ghi lại: biển nào nhận đúng/sai/bỏ sót, thời tiết, tốc độ — đây chính là số liệu thực nghiệm cho báo cáo.
-- Thẻ microSD lưu ảnh camera trong lúc chạy → gửi Khang làm thêm dữ liệu thật.
-
----
+1. Đặt **breadboard đã cắm sẵn mạch** vào hộp nhựa (C1), dán đáy bằng băng keo VHB.
+2. Dán băng keo đè lên các dây jumper, hoặc **chấm keo nến** ở chân dây, để rung xe không làm tuột dây.
+3. **Dán cố định cáp camera** (cáp dẹt dễ tuột nhất), hướng camera ra trước và lệch phải khoảng 10–15°.
+4. Khoét lỗ nhỏ trên nắp/hông hộp cho camera nhìn ra và cho OLED nhìn thấy được.
+5. Kẹp hộp vào giá kẹp điện thoại có sẵn; đi cáp USB dọc ghi-đông bằng dây rút, **không vướng tay phanh, tay ga, không bị kéo căng khi đánh lái hết cỡ**.
+6. **Lắc thử hộp vài phút** trước khi chạy: log không reset, camera không tuột, dây không lỏng.
+7. Chạy ở đường vắng, tốc độ thấp, **hai người**: người lái chỉ tập trung lái, người ngồi sau quay video và theo dõi.
 
 ## 6. Checklist khi nhận hàng
 
@@ -207,11 +209,10 @@ Thiết bị chạy ổn trên bàn chưa chắc chạy ổn trên xe. Bảng d�
 - [ ] Log báo **camera init OK** và đo được thời gian chụp 1 frame.
 - [ ] Đo dòng tiêu thụ không tải bằng USB tester (ghi vào bảng đo).
 - [ ] OLED 1.3": đọc thứ tự chân in trên module (`VCC GND SCL SDA` hay `GND VCC SCL SDA`) trước khi cắm; ghi lại cho Hôn.
-- [ ] Motor rung: cắm thử qua transistor + diode, cầm trong tay cảm nhận rõ khi đeo găng.
 - [ ] Buzzer passive: phát thử 2 kiểu tiếng (1 tiếng / dồn dập), âm lượng không làm phiền người đứng cạnh.
 - [ ] Gửi bảng pinout đã xác nhận cho Hôn.
 
-## 7. Ảnh thực tế (nhóm tự chụp khi nhận hàng)
+## 7. Bổ sung ảnh thực tế (nhóm tự chụp)
 
 Ảnh trên trang shop thuộc bản quyền của shop/nhà cung cấp, nên **không chép vào repo** (repo công khai trên GitHub và ảnh sẽ dùng lại trong báo cáo). Thay vào đó, khi nhận hàng hãy tự chụp và lưu vào `05_firmware_esp32s3/images/photos/`. Ảnh tự chụp còn dùng được thẳng cho báo cáo và slide.
 
@@ -221,7 +222,11 @@ Thiết bị chạy ổn trên bàn chưa chắc chạy ổn trên xe. Bảng d�
 | `photos/02_board_pins.jpg` | Cận cảnh 2 hàng chân có in số GPIO (để đối chiếu Mục 3) |
 | `photos/03_breadboard_wiring.jpg` | Mạch đã cắm trên breadboard theo sơ đồ Mục 3.2 |
 | `photos/04_serial_log.png` | Ảnh chụp màn hình log `mock_inference_test` |
-| `photos/05_enclosure_mounted.jpg` | Hộp đã gắn trên ghi-đông xe |
+| `photos/05_bench_setup.jpg` | Bo trên bàn hướng vào màn hình phát video (demo chính, Mục 5.1) |
+| `photos/06_bench_csv.png` | Mở file `bench.csv` từ thẻ microSD (bằng Excel / Google Sheets) |
+| `photos/07_temp_mount.jpg` | Hộp gắn tạm trên giá kẹp xe (Mục 5.2) |
+
+**Thẻ microSD:** firmware `mock_inference_test` đã ghi toàn bộ số liệu đo ra `/sdcard/bench.csv` (các dòng `CSV,...`). Sau mỗi lần chạy, rút thẻ, chép file về máy và lưu cùng ngày đo — đây là bằng chứng số liệu cho Chương 4 của báo cáo.
 
 Mẹo: thu nhỏ ảnh còn khoảng 1600 px chiều ngang trước khi commit để repo nhẹ.
 
