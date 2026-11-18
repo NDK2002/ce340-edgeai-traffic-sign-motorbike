@@ -24,7 +24,11 @@
 #define PIN_OLED_SDA   41
 #define PIN_OLED_SCL   42
 #define PIN_BUZZER     14  // buzzer passive 5V qua transistor S8050, xuất PWM (LEDC) để tạo tiếng
-#define PIN_VIBRATION  1   // motor rung 3V ở tay nắm qua transistor S8050 + diode 1N4148
 // OLED 1.3" dùng chip SH1106 (không phải SSD1306), địa chỉ I2C thường 0x3C
 #define PIN_ALERT_LED  21
 #define PIN_BUTTON     47  // tùy chọn, pull-up nội
+
+// --- Thẻ microSD (SDMMC 1-bit, khe có sẵn trên bo) ---
+#define PIN_SD_CMD     38
+#define PIN_SD_CLK     39
+#define PIN_SD_D0      40
