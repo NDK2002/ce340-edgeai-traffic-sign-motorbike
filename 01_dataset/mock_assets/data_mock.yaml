@@ -1,5 +1,4 @@
 # Cấu hình YOLO smoke-test dùng chung cho [K2] và [T2] với bộ 5 ảnh Mock Stub
-path: .
 train: images
 val: images
 test: images

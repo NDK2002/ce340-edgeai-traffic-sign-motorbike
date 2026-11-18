@@ -22,6 +22,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+*.cache
 
 # Heavy datasets & augmentation outputs (store on Google Drive / Roboflow)
 01_dataset/raw/
@@ -32,6 +33,7 @@ __pycache__/
 01_dataset/test/
 !01_dataset/mock_assets/
 !01_dataset/mock_assets/**
+01_dataset/mock_assets/*.cache
 02_augmentation/outputs/
 
 # Heavy model checkpoints & training runs (keep compact INT8 .tflite / .h stubs)
