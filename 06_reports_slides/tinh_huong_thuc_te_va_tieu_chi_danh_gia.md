@@ -144,3 +144,38 @@ Không làm bản gắn xe chống nước, nên phần lớn đánh giá làm *
 | P3 | Đối chiếu lại mã 12 biển theo **QCVN 41:2024/BGTVT** (thay QCVN 41:2019 từ 01/01/2025) | Khang · `classes.yaml`, đề cương |
 | P4 | Sửa mục tiêu FPS / độ trễ trong đề cương (< 150 ms, ≥ 10–15 FPS) cho khớp con số thực tế khoảng 5 FPS | Cả nhóm · đề cương |
 | P5 | Thay các trích dẫn trong đề cương chưa xác minh được bằng nguồn có tác giả / DOI | Hôn · đề cương |
+
+### 8.2 Giải thích đề xuất P1: YOLO → phân loại trên vùng ROI
+
+**Ý chính:** YOLO trả lời *"biển ở đâu + là biển gì"* trên cả khung hình. Phân loại chỉ trả lời *"ảnh nhỏ này là biển gì"* — nên cần một bước khác lo phần *"ở đâu"*. Đề xuất: **YOLO giữ làm mốc so sánh trên GPU, model chạy trên chip là model phân loại.**
+
+| | YOLO (phát hiện) | Phân loại trên ROI |
+|---|---|---|
+| Đầu vào → đầu ra | Cả khung hình → nhiều khung (vị trí, lớp, độ tin cậy) | Ảnh cắt nhỏ (48–96 px) → 1 nhãn trong 12 lớp hoặc "không phải biển" |
+| Chạy trên ESP32-S3 | Nặng, dễ vướng op TFLite Micro không hỗ trợ, hậu xử lý NMS phức tạp | Nhẹ (CNN nhỏ / MobileNetV2 0.35), chỉ cần argmax — firmware D2 đã có sẵn |
+| Nén INT8 / pruning / KD | Rủi ro mất chính xác ở đầu ra | Đơn giản → có thời gian so sánh nhiều kỹ thuật nén |
+| Nhãn dữ liệu | Khung bao | Ảnh cắt + nhãn lớp — **cắt tự động từ nhãn YOLO đang có** |
+| Chỉ số | mAP@0.5 | Accuracy, F1, ma trận nhầm lẫn |
+| Dataset so sánh | — | Khớp với **GTSRB** (P2) |
+
+**Cách chọn vùng cắt (phần khó nhất):**
+
+| Cách | Mô tả | Ưu | Nhược |
+|---|---|---|---|
+| A. ROI cố định | Cắt ô góc trên-phải (firmware đang làm) | Đơn giản nhất | Biển nhỏ trong ô; 2 biển cùng lúc chỉ ra 1 kết quả; bắt buộc có lớp "không có biển" |
+| **B. Lọc màu + hình → phân loại** *(đề xuất)* | Tìm mảng màu đỏ / xanh dương / vàng có dạng tròn hoặc tam giác → cắt từng ứng viên 48–64 px → phân loại (tối đa ~3 ứng viên/khung) | Biển chiếm gần hết ảnh cắt nên chính xác hơn; cách kinh điển trong các bài TinyML nhận diện biển báo | Ngược sáng / ban đêm màu không ổn định → dễ bỏ sót (chính là T4, T5 để đo) |
+| C. Chia lưới ROI | Phân loại từng ô trong vùng ROI | Không cần lọc màu | Chậm gấp nhiều lần; biển hay bị cắt ngang giữa 2 ô |
+
+**Nếu chốt P1, việc của từng người thay đổi:**
+
+| Người | Thay đổi |
+|---|---|
+| Khang | Script cắt ảnh biển từ nhãn YOLO; thu thêm lớp **"không phải biển"** (nền đường, đèn hậu, bảng quảng cáo đỏ/xanh) — quan trọng để chống báo nhầm (T9); tải GTSRB nếu chốt P2 |
+| Trung | YOLO chỉ làm mốc trên GPU; train model phân loại 48/64/96 px; báo cáo accuracy / F1 / ma trận nhầm lẫn |
+| Sơn | Nén model phân loại: PTQ, QAT, pruning, KD — so sánh trên chip bằng firmware D2 |
+| Duy | Firmware đã có crop ROI + resize + Invoke + argmax (cách A). Nếu chọn cách B: thêm bước lọc màu + tìm mảng màu trên RGB565 và đo thời gian riêng |
+| Hôn | Không đổi |
+
+**Phải sửa theo nếu chốt:** đề cương đổi mục tiêu *"mAP@0.5 ≥ 85%"* thành accuracy/F1 cho model trên chip (giữ mAP cho YOLO trên GPU); `classes.yaml` có thể thêm lớp "không phải biển" (liên quan Q2). Mất thông tin vị trí chính xác của biển — cách B vẫn có vị trí thô từ bước lọc màu. Phần "so sánh YOLO và MobileNet" trong đề cương vẫn giữ được, và thành điểm phân tích *độ chính xác ↔ khả năng chạy trên vi điều khiển*.
+
+**Cần cả nhóm trả lời ở buổi sync:** (1) có chốt P1 không; (2) nếu có, chọn cách A hay B; (3) kích thước ảnh cắt 48, 64 hay 96 px.
