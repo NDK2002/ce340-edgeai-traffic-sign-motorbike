@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" width="880" height="420" font-family="Helvetica, Arial, sans-serif">
+  <rect width="880" height="420" fill="#ffffff"/>
+  <text x="440" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">Mua đúng bo &amp; đúng camera</text>
+
+  <!-- ================= Panel 1: module ================= -->
+  <rect x="16" y="50" width="420" height="356" rx="10" fill="#f6f7f9" stroke="#d5d9df"/>
+  <text x="30" y="76" font-size="15" font-weight="bold" fill="#111">① Đọc chữ in trên vỏ kim loại của module</text>
+
+  <!-- Đúng -->
+  <rect x="36" y="92" width="180" height="120" rx="6" fill="#c9ced6" stroke="#15803d" stroke-width="4"/>
+  <text x="126" y="128" text-anchor="middle" font-size="13" font-weight="bold" fill="#222">ESP32-S3-WROOM-1</text>
+  <rect x="86" y="142" width="80" height="30" rx="4" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+  <text x="126" y="163" text-anchor="middle" font-size="18" font-weight="bold" fill="#15803d">N16R8</text>
+  <text x="126" y="190" text-anchor="middle" font-size="11" fill="#444">N16 = Flash 16 MB</text>
+  <text x="126" y="204" text-anchor="middle" font-size="11" fill="#444">R8 = PSRAM 8 MB</text>
+  <circle cx="210" cy="96" r="16" fill="#15803d"/>
+  <text x="210" y="102" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">✓</text>
+  <text x="126" y="232" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">MUA LOẠI NÀY</text>
+
+  <!-- Sai: N8R2 -->
+  <rect x="246" y="92" width="170" height="120" rx="6" fill="#c9ced6" stroke="#d62828" stroke-width="4"/>
+  <text x="331" y="128" text-anchor="middle" font-size="13" font-weight="bold" fill="#222">ESP32-S3-WROOM-1</text>
+  <rect x="291" y="142" width="80" height="30" rx="4" fill="#fee2e2" stroke="#d62828" stroke-width="2"/>
+  <text x="331" y="163" text-anchor="middle" font-size="18" font-weight="bold" fill="#d62828">N8R2</text>
+  <text x="331" y="190" text-anchor="middle" font-size="11" fill="#444">PSRAM chỉ 2 MB</text>
+  <text x="331" y="204" text-anchor="middle" font-size="11" fill="#444">không đủ cho model</text>
+  <circle cx="410" cy="96" r="16" fill="#d62828"/>
+  <text x="410" y="102" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">✗</text>
+  <text x="331" y="232" text-anchor="middle" font-size="13" font-weight="bold" fill="#d62828">KHÔNG MUA</text>
+
+  <!-- Sai: ESP32-CAM đời cũ -->
+  <rect x="36" y="252" width="180" height="96" rx="6" fill="#1f2937" stroke="#d62828" stroke-width="4"/>
+  <circle cx="126" cy="288" r="20" fill="#111" stroke="#666" stroke-width="3"/>
+  <text x="126" y="326" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">ESP32-CAM</text>
+  <text x="126" y="340" text-anchor="middle" font-size="10" fill="#bbb">(AI-Thinker, chip ESP32-S)</text>
+  <circle cx="210" cy="256" r="16" fill="#d62828"/>
+  <text x="210" y="262" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">✗</text>
+  <text x="126" y="370" text-anchor="middle" font-size="11" fill="#d62828">Chip cũ, không tăng tốc AI</text>
+  <text x="126" y="385" text-anchor="middle" font-size="11" fill="#d62828">Tên gần giống → dễ mua nhầm</text>
+
+  <!-- Gợi ý: 2 cổng USB-C -->
+  <rect x="246" y="252" width="170" height="96" rx="6" fill="#24476b" stroke="#15803d" stroke-width="4"/>
+  <rect x="268" y="322" width="50" height="16" rx="7" fill="#bfc5cc"/>
+  <rect x="344" y="322" width="50" height="16" rx="7" fill="#bfc5cc"/>
+  <text x="331" y="290" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">2 cổng USB-C</text>
+  <text x="331" y="306" text-anchor="middle" font-size="10" fill="#dfe7f0">cắm thẳng máy tính, không cần đế</text>
+  <circle cx="410" cy="256" r="16" fill="#15803d"/>
+  <text x="410" y="262" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">✓</text>
+  <text x="331" y="370" text-anchor="middle" font-size="11" fill="#15803d">Nên chọn bo có 2 cổng USB-C</text>
+  <text x="331" y="385" text-anchor="middle" font-size="11" fill="#15803d">(1 cổng nạp code, 1 cổng xem log)</text>
+
+  <!-- ================= Panel 2: ống kính ================= -->
+  <rect x="448" y="50" width="416" height="356" rx="10" fill="#f6f7f9" stroke="#d5d9df"/>
+  <text x="462" y="76" font-size="15" font-weight="bold" fill="#111">② Chọn ống kính: camera "nhìn thấy" gì?</text>
+
+  <!-- Khung nhìn ống kính thường -->
+  <clipPath id="v1"><rect x="468" y="100" width="180" height="140" rx="4"/></clipPath>
+  <g clip-path="url(#v1)">
+    <rect x="468" y="100" width="180" height="70" fill="#bfe3ff"/>
+    <rect x="468" y="170" width="180" height="70" fill="#9aa3ad"/>
+    <polygon points="520,240 600,240 566,170 554,170" fill="#6b7280"/>
+    <line x1="560" y1="240" x2="560" y2="172" stroke="#fff" stroke-width="2" stroke-dasharray="8 6"/>
+    <rect x="618" y="132" width="4" height="60" fill="#555"/>
+    <circle cx="620" cy="126" r="20" fill="#fff" stroke="#d62828" stroke-width="6"/>
+    <text x="620" y="132" text-anchor="middle" font-size="15" font-weight="bold" fill="#111">50</text>
+  </g>
+  <rect x="468" y="100" width="180" height="140" rx="4" fill="none" stroke="#15803d" stroke-width="4"/>
+  <text x="558" y="262" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803d">✓ Ống kính thường (~66°)</text>
+  <text x="558" y="280" text-anchor="middle" font-size="11" fill="#333">Biển báo to, rõ số → AI đọc được</text>
+
+  <!-- Khung nhìn góc rộng -->
+  <clipPath id="v2"><ellipse cx="760" cy="170" rx="92" ry="72"/></clipPath>
+  <rect x="668" y="100" width="184" height="140" rx="4" fill="#111"/>
+  <g clip-path="url(#v2)">
+    <rect x="660" y="96" width="200" height="74" fill="#bfe3ff"/>
+    <rect x="660" y="170" width="200" height="74" fill="#9aa3ad"/>
+    <path d="M700,244 Q760,150 820,244 Z" fill="#6b7280"/>
+    <rect x="706" y="148" width="40" height="22" fill="#c8b89a"/>
+    <rect x="776" y="140" width="48" height="30" fill="#b9a68a"/>
+    <rect x="800" y="150" width="2" height="16" fill="#555"/>
+    <circle cx="801" cy="148" r="4" fill="#fff" stroke="#d62828" stroke-width="2"/>
+  </g>
+  <circle cx="801" cy="148" r="12" fill="none" stroke="#facc15" stroke-width="2" stroke-dasharray="3 3"/>
+  <rect x="668" y="100" width="184" height="140" rx="4" fill="none" stroke="#d62828" stroke-width="4"/>
+  <text x="760" y="262" text-anchor="middle" font-size="13" font-weight="bold" fill="#d62828">✗ Góc rộng (120–160°)</text>
+  <text x="760" y="280" text-anchor="middle" font-size="11" fill="#333">Biển báo chỉ còn vài pixel, méo hình</text>
+
+  <rect x="468" y="300" width="384" height="92" rx="8" fill="#fff" stroke="#d5d9df"/>
+  <text x="482" y="322" font-size="12" font-weight="bold" fill="#111">Vì sao?</text>
+  <text x="482" y="342" font-size="12" fill="#333">Model nhìn ảnh rất nhỏ (160×160 pixel). Góc càng rộng thì</text>
+  <text x="482" y="360" font-size="12" fill="#333">biển báo ở xa càng bé, số "40/50/60" mờ thành vài chấm.</text>
+  <text x="482" y="378" font-size="12" fill="#333">→ Mua camera OV2640 loại thường đi kèm bo là đủ.</text>
+</svg>
