@@ -41,6 +41,12 @@ def export_tflite_to_c_header(
             "};",
             f"const unsigned int {array_name}_len = {len(tflite_bytes)};",
             "",
+            "// Compatibility aliases for firmware models.h",
+            "#ifndef g_mock_model_int8",
+            f"#define g_mock_model_int8 {array_name}",
+            f"#define g_mock_model_int8_len {array_name}_len",
+            "#endif",
+            "",
             f"#endif  // {guard_name}",
             "",
         ]

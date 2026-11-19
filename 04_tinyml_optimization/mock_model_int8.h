@@ -503,4 +503,10 @@ alignas(16) const unsigned char g_tinyml_mock_model_int8[] = {
 };
 const unsigned int g_tinyml_mock_model_int8_len = 5944;
 
+// Compatibility aliases for firmware models.h
+#ifndef g_mock_model_int8
+#define g_mock_model_int8 g_tinyml_mock_model_int8
+#define g_mock_model_int8_len g_tinyml_mock_model_int8_len
+#endif
+
 #endif  // CE340_TINYML_MOCK_MODEL_INT8_H_
