@@ -51,7 +51,9 @@ constexpr int kTimedRuns = 20;
 constexpr int kCameraRuns = 20;
 constexpr int kPipelineRuns = 30;
 constexpr size_t kPipelineModel = 0;   // chỉ số trong kModels dùng cho pipeline và soak
-constexpr int kSoakSeconds = 30 * 60;  // 0 = bỏ qua soak
+// 0 = bỏ qua soak (mặc định để boot và chạy benchmark nhanh).
+// Đặt > 0 (ví dụ 30 * 60) khi cần đo nhiệt độ/dòng mA trên USB tester trong 30 phút.
+constexpr int kSoakSeconds = 0;
 constexpr int kSoakReportSeconds = 10;
 constexpr int kRoiMarginRight = 0;     // ROI bám góc trên-phải: biển báo nằm ở lề phải, phía trên
 constexpr int kRoiMarginTop = 0;
@@ -392,19 +394,18 @@ bool input_spec(const TfLiteTensor *t, InputSpec &s) {
 }
 
 // Bảng tra pixel 0..255 → giá trị đưa vào model, tránh phép chia và float trong vòng lặp từng pixel.
-// Giả định model huấn luyện với ảnh chuẩn hoá về [0, 1] (chốt trong firmware contract với Trung/Sơn).
-// Nếu model dùng [-1, 1] hoặc giữ nguyên 0..255 thì chỉ cần sửa biến x bên dưới.
+// Hỗ trợ cả 2 dải chuẩn hoá: NORM_0_TO_1 ([0, 1] cho YOLO) và NORM_MINUS1_TO_1 ([-1, 1] cho MobileNetV2-SSD).
 struct PixelLut {
   int8_t i8[256];
   uint8_t u8[256];
   float f32[256];
 };
 
-void build_lut(const TfLiteTensor *t, PixelLut &lut) {
+void build_lut(const TfLiteTensor *t, InputNorm norm, PixelLut &lut) {
   const float scale = t->params.scale;
   const int zp = t->params.zero_point;
   for (int v = 0; v < 256; ++v) {
-    const float x = v / 255.0f;
+    const float x = (norm == NORM_MINUS1_TO_1) ? (v / 127.5f - 1.0f) : (v / 255.0f);
     lut.f32[v] = x;
     if (scale > 0.0f) {
       const long q = lroundf(x / scale) + zp;
@@ -595,7 +596,7 @@ void benchmark_pipeline_and_soak() {
       ESP_LOGE(TAG, "[%s] input phải là NHWC 1 hoặc 3 kênh, kiểu int8/uint8/float32", m.name);
     } else {
       static PixelLut lut;
-      build_lut(interp.input(0), lut);
+      build_lut(interp.input(0), m.norm, lut);
       run_pipelines(interp, m, s, lut);
       run_soak(interp, m, s, lut);
     }
