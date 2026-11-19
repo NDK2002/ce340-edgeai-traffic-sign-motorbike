@@ -1,0 +1,181 @@
+# Tình huống thực tế & Tiêu chí đánh giá — Thiết bị nhận diện biển báo cho xe máy
+
+* **Người soạn:** Vũ Văn Duy (`26410031`) — Kỹ sư Nhúng & Thực nghiệm
+* **Trạng thái:** 🟡 Đề xuất — **cần cả nhóm thống nhất ở buổi sync** (các quyết định ở [Mục 8](#8-quyết-định-cần-chốt-ở-buổi-sync))
+* **Liên quan:** [Đề cương](../De_Cuong_Chi_Tiet_Do_An_CE340.md) · [BOM & phần cứng](../05_firmware_esp32s3/bom_and_hardware_specs.md) · [`classes.yaml`](../01_dataset/classes.yaml)
+
+---
+
+## 1. Vì sao cần tài liệu này
+
+Nhận diện biển báo là đề tài phổ biến. Phần lớn các nhóm dừng ở "ảnh tĩnh → mAP cao". Điểm khác biệt của nhóm mình là **thiết bị chạy thật trên xe máy ở Việt Nam**, nên cần chứng minh nó dùng được trong các tình huống thật, bằng **số đo cụ thể** chứ không chỉ mAP.
+
+Tài liệu này liệt kê: phạm vi đề tài (làm gì / không làm gì), 9 tình huống khó, cách xử lý, chỉ số đo và ai phụ trách.
+
+---
+
+## 2. Phạm vi đề tài
+
+| Điều kiện | Trong phạm vi | Ngoài phạm vi (ghi rõ trong báo cáo) |
+|---|---|---|
+| **Mưa** | Mưa phùn, đường ướt sau mưa, kính camera đọng vài giọt nước | Mưa lớn: người lái thường trùm áo mưa che luôn thiết bị, hoặc chuyển sang đi ô tô / Grab — thiết bị chỉ cần **tự báo "camera bị che"** |
+| **Ánh sáng** | Ban ngày, ngược sáng sáng sớm / chiều tối, ban đêm đường có đèn | Đêm đường không đèn |
+| **Tốc độ** | 30–50 km/h (nội đô) | > 60 km/h |
+| **Biển báo** | 12 lớp trong `classes.yaml`, biển tròn/tam giác cỡ chuẩn | Biển phụ có chữ (giờ áp dụng, "trừ xe ..."), biển điện tử |
+| **Vị trí** | Biển ở lề phải, phía trên làn đường | Biển treo giữa đường trên giá long môn |
+
+---
+
+## 3. Chín tình huống khó
+
+| # | Tình huống | Vì sao khó | Cách xử lý | Chỉ số đo | Phụ trách |
+|---|---|---|---|---|---|
+| **T1** | **Biển ở xa → quá nhỏ** | Thu nhỏ cả khung hình về 160×160 thì biển ở 15 m chỉ còn ~6 pixel (xem [Mục 4](#4-phân-tích-cự-ly-và-kích-thước-biển)) | Cắt vùng góc trên bên phải từ ảnh độ phân giải cao (ROI) thay vì thu nhỏ cả khung | Cự ly nhận diện được xa nhất (m) | Duy (firmware ROI), Trung (input size) |
+| **T2** | **Thời gian phản ứng** | 40 km/h ≈ 11 m/giây: chậm 1 giây là đi qua biển | Đo toàn bộ vòng camera → AI → cảnh báo | Thời gian báo trước khi tới biển (giây) | Duy |
+| **T3** | **Biển không áp dụng cho xe máy** | "Cấm ô tô", biển có biển phụ "trừ xe máy" → báo là sai | Lớp "biển không liên quan" để **không** báo (cần chốt, [Mục 8](#8-quyết-định-cần-chốt-ở-buổi-sync)) | Số lần báo nhầm do biển không liên quan | Khang, Trung |
+| **T4** | **Ngược sáng** | Biển thành mảng tối, mất màu đỏ | Thêm ảnh ngược sáng vào dữ liệu; thử bật/tắt cân bằng sáng tự động của camera | Recall khi ngược sáng vs bình thường | Khang, Duy |
+| **T5** | **Ban đêm** | Biển phản quang sáng lên dưới đèn xe nhưng nền nhiễu, dễ nhòe | Tập kiểm thử riêng ban đêm | Recall ban đêm | Khang, Trung |
+| **T6** | **Bị che khuất** | Cây, xe tải, xe buýt, bảng quảng cáo | Đã có trong tăng cường dữ liệu; đo lại trên đường | Recall khi che < 40% | Khang |
+| **T7** | **Nhòe do rung** | Ổ gà, đường xấu, giá đỡ rung | Dán cố định camera khi gắn tạm; giảm thời gian phơi sáng camera | Recall đường đẹp vs đường xấu | Duy |
+| **T8** | **Camera bị che / mờ** | Áo mưa, giọt nước, bụi | Phần mềm đo độ nét + độ sáng ảnh; mờ/tối liên tục vài giây → báo "Camera bị che" lên OLED | Thời gian phát hiện camera bị che (giây) | Duy, Hôn |
+| **T9** | **Báo nhầm gây phiền** | Thấy biển của làn khác, biển dán trên xe buýt/xe tải, vật tròn đỏ giống biển | Chỉ báo khi thấy biển ở nhiều khung hình liên tiếp; mỗi biển báo 1 lần | **Số lần báo nhầm / km** | Trung, Duy |
+
+**Ưu tiên:** T1, T8, T9 — ảnh hưởng trực tiếp đến việc thiết bị có dùng được hay không, và ít nhóm làm.
+
+---
+
+## 4. Phân tích cự ly và kích thước biển
+
+Biển tròn cỡ chuẩn đường đô thị đường kính khoảng **70 cm**. Camera OV2640 ống kính thường, góc nhìn khoảng **66°** (số liệu ước tính, cần đo lại trên bo thật). Kích thước biển trong ảnh đưa vào model (160×160):
+
+| Cự ly tới biển | Góc biển chiếm | **A.** Thu nhỏ cả khung QVGA 320→160 | **B.** Cắt 160×160 từ QVGA (không thu nhỏ) | **C.** Cắt 160×160 từ VGA 640×480 |
+|---:|---:|---:|---:|---:|
+| 5 m | 8,0° | 19 px | 39 px | 78 px |
+| 10 m | 4,0° | 10 px | 19 px | 39 px |
+| 15 m | 2,7° | **6 px** | 13 px | **26 px** |
+| 20 m | 2,0° | 5 px | 10 px | 19 px |
+| 30 m | 1,3° | 3 px | 6 px | 13 px |
+
+*Model phát hiện vật thể nhỏ thường cần biển cỡ ≥ 15–20 px mới đọc được chữ số 40/50/60.*
+
+**Hệ quả:**
+- Phương án **A** (đang dùng mặc định) chỉ nhận được biển trong khoảng **≤ 5–7 m** → ở 40 km/h người lái còn chưa tới 1 giây.
+- Phương án **C** nhận được biển từ khoảng **20 m** → còn khoảng 1,5 giây. Đổi lại: vùng cắt hẹp (~16° ngang) nên phải đặt đúng góc trên bên phải; khi xe tới gần, biển trượt ra khỏi vùng cắt → **cửa sổ nhận diện khoảng 8–25 m**. Ảnh VGA tốn thêm RAM (PSRAM) và thời gian chụp — Duy đo bằng `mock_inference_test`.
+
+**Ngân sách thời gian (ở 40 km/h ≈ 11 m/s):** nếu chạy ~5 khung hình/giây và cần 3 khung liên tiếp để xác nhận (T9) thì mất ~0,6 giây ≈ 7 m đường. Muốn báo trước biển ≥ 1 giây → phải **bắt đầu thấy biển từ ~20 m**. Đây là lý do T1 quyết định cả FPS lẫn cách chọn input.
+
+---
+
+## 5. Chính sách cảnh báo
+
+| Kênh | Vai trò | Kiểu báo |
+|---|---|---|
+| **OLED 1.3" + LED đỏ siêu sáng** | **Chính** | OLED: icon biển + chữ ngắn; biển tốc độ hiện cố định đến khi gặp biển tốc độ mới. LED: biển cấm = nháy nhanh · biển khác = sáng 1 lần |
+| **Buzzer passive** (âm lượng vừa) | Phụ — có nút tắt (tùy chọn) | Biển cấm: 3 tiếng dồn dập · Tốc độ, hiệu lệnh, cảnh báo: 1 tiếng |
+
+*Nhóm đã bỏ motor rung ở tay nắm (giảm lắp ráp để tập trung vào tối ưu mô hình và đo trên chip). Hạn chế: khi gió to và đội mũ bảo hiểm, buzzer có thể khó nghe — ghi rõ trong phần giới hạn của báo cáo.*
+
+**Quy tắc chống phiền (T9):**
+1. Chỉ báo khi cùng một biển xuất hiện ở **≥ 3 khung hình liên tiếp** với độ tin cậy ≥ ngưỡng (ngưỡng chốt sau khi chạy thử).
+2. Mỗi biển chỉ báo **1 lần**; không báo lại cùng lớp trong ~10 giây.
+3. Biển không áp dụng cho xe máy (T3) → **không báo**.
+4. Camera bị che (T8) → hiện "Camera bị che" trên OLED + LED sáng liên tục, **không** im lặng như thể không có biển.
+
+---
+
+## 6. Bộ chỉ số đánh giá thực tế (ngoài mAP)
+
+| Chỉ số | Cách đo | Mục tiêu đề xuất |
+|---|---|---|
+| mAP@0.5, Precision, Recall (trên tập kiểm thử) | Như đề cương | ≥ 85% (thường), ≥ 75% (khó) |
+| **Recall theo từng điều kiện** | Tách tập kiểm thử: ngày / ngược sáng / đêm / sau mưa / bị che | Báo cáo từng nhóm, không gộp |
+| **Cự ly nhận diện xa nhất** | Chạy thử, ghi khoảng cách lúc thiết bị báo (đánh dấu mốc trên đường) | ≥ 15 m |
+| **Thời gian báo trước biển** | Cự ly ÷ vận tốc | ≥ 1 giây ở 40 km/h |
+| **Độ trễ toàn hệ thống** | Từ lúc chụp ảnh tới lúc có kết quả (firmware in thời gian từng khâu ở bước `pipeline`) | Ghi số đo thật — mục tiêu trong đề cương đang chờ chốt lại (Mục 8) |
+| **Số lần báo nhầm / km** | Đếm trên cung đường thử | Càng thấp càng tốt — ghi số thật |
+| **Tỉ lệ bỏ sót biển** | Biển có trên đường nhưng không báo / tổng số biển | Ghi số thật |
+| Dòng tiêu thụ (mA), nhiệt độ chip | USB tester, log nhiệt độ | Chạy 30 phút liên tục không reset |
+
+---
+
+## 7. Cách demo và chạy thử
+
+### 7.1 Demo chính: phát lại video quay từ xe
+
+Không làm bản gắn xe chống nước, nên phần lớn đánh giá làm **trên bàn** với video thật:
+
+1. Một người lái, một người ngồi sau cầm **điện thoại quay video** các tuyến đường TP.HCM có biển trong 12 lớp, theo ma trận điều kiện ở bước 2 bên dưới. Ghi lại tốc độ và vị trí các biển.
+2. Đặt bo ESP32-S3 cố định trên bàn, camera hướng vào màn hình đang **phát lại video** đó (tắt đèn phòng để giảm phản chiếu).
+3. Thiết bị nhận diện và cảnh báo như khi chạy thật; đếm báo đúng / bỏ sót / báo nhầm theo bảng ở bước 5.
+4. Cùng một video chạy lại với từng model (FP32 / INT8 / pruned) → so sánh các model **trong cùng điều kiện**.
+
+*Lưu ý khi viết báo cáo:* ảnh chụp qua màn hình bị đổi độ sáng, màu và có thể có sọc nhiễu, nên kết quả này là **xấp xỉ** cho cảnh thật. Ghi rõ là phát lại video, kèm một clip ngắn gắn tạm trên xe (trời khô, cuối Tuần 7) để đối chứng.
+
+### 7.2 Quy trình quay video / chạy thử ngoài đường
+
+1. **Chọn 1 cung đường cố định** (2–5 km) có sẵn nhiều biển thuộc 12 lớp; lập danh sách biển và vị trí trước.
+2. **Ma trận điều kiện** — chạy cùng cung đường ở: ban ngày · sáng sớm/chiều (ngược sáng) · tối · sau mưa.
+3. **Hai người:** người lái chỉ tập trung lái; người ngồi sau quay video (điện thoại) và ghi chép. Clip gắn tạm thiết bị chỉ làm khi trời khô, thử ở bãi trống trước.
+4. Thẻ microSD: firmware ghi số liệu đo ra `bench.csv`; video điện thoại → cắt khung hình gửi Khang bổ sung dữ liệu thật.
+5. Ghi kết quả vào bảng:
+
+| Lần chạy | Ngày | Điều kiện | Tốc độ TB | Số biển trên đường | Báo đúng | Bỏ sót | Báo nhầm | Cự ly báo TB (m) | Ghi chú |
+|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| | | | | | | | | | |
+
+---
+
+## 8. Quyết định cần chốt ở buổi sync
+
+| # | Câu hỏi | Ảnh hưởng tới | Đề xuất |
+|---|---|---|---|
+| Q1 | Dùng ROI (cắt vùng góc trên phải) hay thu nhỏ cả khung? Cắt từ QVGA hay VGA? | Trung (train đúng kiểu ảnh), Sơn (input size), Duy (firmware) | Thử **phương án C** (cắt từ VGA), đo thời gian chụp; nếu chậm quá thì lùi về B |
+| Q2 | Có thêm lớp thứ 13 "biển không áp dụng cho xe máy" không? | Khang (dữ liệu), Trung, `classes.yaml` (đổi contract `nc: 12 → 13`) | Có, nếu Khang thu đủ ảnh "Cấm ô tô" và các biển tương tự; nếu không thì ghi là giới hạn |
+| Q3 | Mục tiêu FPS và số khung xác nhận | Trung, Sơn, Duy | ~5 FPS, xác nhận 3 khung |
+| Q4 | Ngưỡng "camera bị che" | Duy, Hôn | Chốt sau khi có ảnh thật từ bo |
+| Q5 | Tập kiểm thử tách theo điều kiện (ngày/ngược sáng/đêm/sau mưa/che khuất) | Khang, Trung | Có — để báo cáo Recall theo từng điều kiện |
+
+### 8.1 Đề xuất lớn đang chờ cả nhóm chốt (chưa sửa tài liệu nào)
+
+| # | Đề xuất | Ảnh hưởng tới |
+|---|---|---|
+| P1 | Đổi bài toán trên chip từ **YOLO detection** sang **classification trên vùng ROI**; YOLO giữ làm baseline chạy trên GPU | Trung, Sơn, Duy · Nội dung 3–4 đề cương |
+| P2 | Thêm **GTSRB** làm bộ dữ liệu so sánh với các bài báo | Khang, Trung |
+| P3 | Đối chiếu lại mã 12 biển theo **QCVN 41:2024/BGTVT** (thay QCVN 41:2019 từ 01/01/2025) | Khang · `classes.yaml`, đề cương |
+| P4 | Sửa mục tiêu FPS / độ trễ trong đề cương (< 150 ms, ≥ 10–15 FPS) cho khớp con số thực tế khoảng 5 FPS | Cả nhóm · đề cương |
+| P5 | Thay các trích dẫn trong đề cương chưa xác minh được bằng nguồn có tác giả / DOI | Hôn · đề cương |
+
+### 8.2 Giải thích đề xuất P1: YOLO → phân loại trên vùng ROI
+
+**Ý chính:** YOLO trả lời *"biển ở đâu + là biển gì"* trên cả khung hình. Phân loại chỉ trả lời *"ảnh nhỏ này là biển gì"* — nên cần một bước khác lo phần *"ở đâu"*. Đề xuất: **YOLO giữ làm mốc so sánh trên GPU, model chạy trên chip là model phân loại.**
+
+| | YOLO (phát hiện) | Phân loại trên ROI |
+|---|---|---|
+| Đầu vào → đầu ra | Cả khung hình → nhiều khung (vị trí, lớp, độ tin cậy) | Ảnh cắt nhỏ (48–96 px) → 1 nhãn trong 12 lớp hoặc "không phải biển" |
+| Chạy trên ESP32-S3 | Nặng, dễ vướng op TFLite Micro không hỗ trợ, hậu xử lý NMS phức tạp | Nhẹ (CNN nhỏ / MobileNetV2 0.35), chỉ cần argmax — firmware D2 đã có sẵn |
+| Nén INT8 / pruning / KD | Rủi ro mất chính xác ở đầu ra | Đơn giản → có thời gian so sánh nhiều kỹ thuật nén |
+| Nhãn dữ liệu | Khung bao | Ảnh cắt + nhãn lớp — **cắt tự động từ nhãn YOLO đang có** |
+| Chỉ số | mAP@0.5 | Accuracy, F1, ma trận nhầm lẫn |
+| Dataset so sánh | — | Khớp với **GTSRB** (P2) |
+
+**Cách chọn vùng cắt (phần khó nhất):**
+
+| Cách | Mô tả | Ưu | Nhược |
+|---|---|---|---|
+| A. ROI cố định | Cắt ô góc trên-phải (firmware đang làm) | Đơn giản nhất | Biển nhỏ trong ô; 2 biển cùng lúc chỉ ra 1 kết quả; bắt buộc có lớp "không có biển" |
+| **B. Lọc màu + hình → phân loại** *(đề xuất)* | Tìm mảng màu đỏ / xanh dương / vàng có dạng tròn hoặc tam giác → cắt từng ứng viên 48–64 px → phân loại (tối đa ~3 ứng viên/khung) | Biển chiếm gần hết ảnh cắt nên chính xác hơn; cách kinh điển trong các bài TinyML nhận diện biển báo | Ngược sáng / ban đêm màu không ổn định → dễ bỏ sót (chính là T4, T5 để đo) |
+| C. Chia lưới ROI | Phân loại từng ô trong vùng ROI | Không cần lọc màu | Chậm gấp nhiều lần; biển hay bị cắt ngang giữa 2 ô |
+
+**Nếu chốt P1, việc của từng người thay đổi:**
+
+| Người | Thay đổi |
+|---|---|
+| Khang | Script cắt ảnh biển từ nhãn YOLO; thu thêm lớp **"không phải biển"** (nền đường, đèn hậu, bảng quảng cáo đỏ/xanh) — quan trọng để chống báo nhầm (T9); tải GTSRB nếu chốt P2 |
+| Trung | YOLO chỉ làm mốc trên GPU; train model phân loại 48/64/96 px; báo cáo accuracy / F1 / ma trận nhầm lẫn |
+| Sơn | Nén model phân loại: PTQ, QAT, pruning, KD — so sánh trên chip bằng firmware D2 |
+| Duy | Firmware đã có crop ROI + resize + Invoke + argmax (cách A). Nếu chọn cách B: thêm bước lọc màu + tìm mảng màu trên RGB565 và đo thời gian riêng |
+| Hôn | Không đổi |
+
+**Phải sửa theo nếu chốt:** đề cương đổi mục tiêu *"mAP@0.5 ≥ 85%"* thành accuracy/F1 cho model trên chip (giữ mAP cho YOLO trên GPU); `classes.yaml` có thể thêm lớp "không phải biển" (liên quan Q2). Mất thông tin vị trí chính xác của biển — cách B vẫn có vị trí thô từ bước lọc màu. Phần "so sánh YOLO và MobileNet" trong đề cương vẫn giữ được, và thành điểm phân tích *độ chính xác ↔ khả năng chạy trên vi điều khiển*.
+
+**Cần cả nhóm trả lời ở buổi sync:** (1) có chốt P1 không; (2) nếu có, chọn cách A hay B; (3) kích thước ảnh cắt 48, 64 hay 96 px.

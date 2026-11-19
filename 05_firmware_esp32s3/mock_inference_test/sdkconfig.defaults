@@ -1,0 +1,21 @@
+# Commit file này (sdkconfig sinh ra khi build thì bị .gitignore bỏ qua)
+CONFIG_IDF_TARGET="esp32s3"
+
+# Flash 16 MB QIO + bảng phân vùng riêng
+CONFIG_ESPTOOLPY_FLASHMODE_QIO=y
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+
+# Octal PSRAM 8 MB (bắt buộc với N16R8 — sai mode này bo sẽ reset liên tục)
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+
+# CPU tối đa, cache lớn cho suy luận
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_ESP32S3_DATA_CACHE_64KB=y
+CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y
+
+# Stack task chính đủ cho interpreter
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192

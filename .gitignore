@@ -54,3 +54,7 @@ weights/
 05_firmware_esp32s3/**/managed_components/
 sdkconfig
 sdkconfig.old
+# PlatformIO + ESP-IDF sinh sdkconfig.<env>; giữ lại sdkconfig.defaults (cấu hình PSRAM/Flash)
+sdkconfig.*
+!sdkconfig.defaults
+05_firmware_esp32s3/**/.vscode/

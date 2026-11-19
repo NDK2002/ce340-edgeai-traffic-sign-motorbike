@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 490" width="880" height="490" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <g id="tile"><rect width="205" height="200" rx="10" fill="#f8fafc" stroke="#d5d9df"/></g>
+  </defs>
+  <rect width="880" height="490" fill="#ffffff"/>
+  <text x="440" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#111">Nhóm C — Gắn tạm lên xe: trông như thế nào?</text>
+  <text x="440" y="52" text-anchor="middle" font-size="12" fill="#666">Hình vẽ minh hoạ để nhận dạng khi mua — không phải ảnh sản phẩm thật</text>
+
+  <!-- C1 hộp nhựa nhỏ có nắp -->
+  <g transform="translate(15,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#1d4ed8"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">C1</text>
+    <rect x="48" y="58" width="110" height="52" rx="6" fill="#e5e7eb" stroke="#6b7280" stroke-width="2"/>
+    <rect x="44" y="44" width="118" height="16" rx="5" fill="#f3f4f6" stroke="#6b7280" stroke-width="2"/>
+    <rect x="96" y="56" width="14" height="8" rx="2" fill="#9ca3af"/>
+    <text x="102" y="92" text-anchor="middle" font-size="11" fill="#4b5563">nắp đậy / nắp gài</text>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Hộp nhựa nhỏ có nắp</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">~100×70×40 mm, vừa breadboard;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">không cần kín nước</text>
+  </g>
+
+  <!-- C2 giá kẹp điện thoại -->
+  <g transform="translate(230,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#1d4ed8"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">C2</text>
+    <circle cx="55" cy="96" r="12" fill="#9ca3af"/>
+    <circle cx="55" cy="96" r="18" fill="none" stroke="#111" stroke-width="5"/>
+    <line x1="62" y1="80" x2="96" y2="58" stroke="#6b7280" stroke-width="7"/>
+    <circle cx="100" cy="55" r="8" fill="#111"/>
+    <rect x="108" y="36" width="72" height="46" rx="6" fill="#374151"/>
+    <rect x="102" y="32" width="14" height="9" rx="2" fill="#9ca3af"/><rect x="172" y="32" width="14" height="9" rx="2" fill="#9ca3af"/>
+    <rect x="102" y="77" width="14" height="9" rx="2" fill="#9ca3af"/><rect x="172" y="77" width="14" height="9" rx="2" fill="#9ca3af"/>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Giá kẹp điện thoại xe máy</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">dùng cái sẵn có của nhóm;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">kẹp hộp như kẹp điện thoại</text>
+  </g>
+
+  <!-- C3 VHB + dây rút -->
+  <g transform="translate(445,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#1d4ed8"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">C3</text>
+    <circle cx="70" cy="74" r="32" fill="#9ca3af" stroke="#4b5563" stroke-width="2"/>
+    <circle cx="70" cy="74" r="15" fill="#fff" stroke="#4b5563" stroke-width="2"/>
+    <text x="70" y="48" text-anchor="middle" font-size="9" font-weight="bold" fill="#1f2937">VHB</text>
+    <line x1="120" y1="100" x2="182" y2="52" stroke="#6b7280" stroke-width="4"/>
+    <rect x="114" y="96" width="12" height="12" fill="#6b7280"/>
+    <line x1="132" y1="104" x2="186" y2="70" stroke="#9ca3af" stroke-width="4"/>
+    <rect x="126" y="100" width="12" height="12" fill="#9ca3af"/>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Băng keo VHB + dây rút</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">VHB: cuộn băng xám dày ~1 mm;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">dây rút nhựa 3×100 mm</text>
+  </g>
+
+  <!-- C4 cáp USB-C -->
+  <g transform="translate(660,65)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#1d4ed8"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">C4</text>
+    <path d="M44,96 C44,40 104,40 104,72 C104,104 160,104 160,50" fill="none" stroke="#111" stroke-width="6"/>
+    <rect x="36" y="94" width="16" height="22" rx="3" fill="#9ca3af"/>
+    <rect x="152" y="30" width="16" height="22" rx="3" fill="#9ca3af"/>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Cáp USB-C 1,5 m lõi tốt</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">ghi 2A–3A trở lên, dây dày;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">cáp mảnh dễ sụt áp làm bo reset</text>
+  </g>
+
+  <!-- C5 sạc dự phòng -->
+  <g transform="translate(15,275)">
+    <use href="#tile"/>
+    <rect x="8" y="8" width="34" height="18" rx="4" fill="#1d4ed8"/><text x="25" y="21" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">C5</text>
+    <rect x="52" y="40" width="96" height="64" rx="10" fill="#334155"/>
+    <rect x="148" y="54" width="7" height="10" fill="#9ca3af"/><rect x="148" y="74" width="7" height="10" fill="#9ca3af"/>
+    <g fill="#22c55e"><circle cx="70" cy="94" r="3"/><circle cx="80" cy="94" r="3"/><circle cx="90" cy="94" r="3"/><circle cx="100" cy="94" r="3"/></g>
+    <text x="100" y="72" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">10000 mAh</text>
+    <text x="102" y="138" text-anchor="middle" font-size="13" font-weight="bold" fill="#111">Sạc dự phòng 10.000 mAh</text>
+    <text x="102" y="158" text-anchor="middle" font-size="11" fill="#555">cổng USB ra 5V/2A trở lên;</text>
+    <text x="102" y="173" text-anchor="middle" font-size="11" fill="#555">dùng cái sẵn có của nhóm</text>
+  </g>
+
+  <!-- Ghi chú -->
+  <g transform="translate(230,275)">
+    <rect width="635" height="200" rx="10" fill="#fff7ed" stroke="#fdba74"/>
+    <text x="16" y="30" font-size="13" font-weight="bold" fill="#9a3412">Bản gắn tạm — chỉ để quay clip khi trời khô</text>
+    <g font-size="12" fill="#7c2d12">
+      <text x="16" y="56">• Không làm hộp chống nước: không cần ốc siết cáp, mica, tản nhiệt, gói hút ẩm</text>
+      <text x="16" y="80">• Breadboard đặt nguyên trong hộp, dán VHB ở đáy</text>
+      <text x="16" y="104">• Dán băng keo đè lên dây jumper hoặc chấm keo nến để rung xe không tuột</text>
+      <text x="16" y="128">• Dán cố định cáp camera dẹt — chỗ dễ tuột nhất</text>
+      <text x="16" y="152">• Lắc thử hộp vài phút trước khi chạy</text>
+      <text x="16" y="176">• Demo chính vẫn là phát lại video đường phố trước camera trên bàn</text>
+    </g>
+  </g>
+</svg>
