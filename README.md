@@ -36,7 +36,8 @@ D:\Trí tuệ nhân tạo\HK3\Trí tuệ nhân tạo cho hệ thống nhúng\Đ�
 ├── 📊 Ke_Hoach_Thuc_Hien_Do_An_CE340_Nhom_Hon.xlsx   <-- [FILE CHÍNH THỨC NỘP THẦY] Bảng tiến độ 8 tuần (Excel)
 ├── 📝 De_Cuong_Chi_Tiet_Do_An_CE340.md             <-- Bản thảo Markdown đề cương chi tiết đầy đủ nội dung
 ├── 📑 Khao_Sat_De_Tai_Va_Phuong_An_Thiet_Ke_CE340.md <-- Báo cáo phân tích tính mới & so sánh gắn xe vs mũ bảo hiểm
-├── 📋 Ke_Hoach_Thuc_Hien_Tuan_4.md                 <-- Kế hoạch & kết quả nghiệm thu chi tiết Tuần 4
+├── 📋 Ke_Hoach_Thuc_Hien_Tuan_4.md                 <-- Kế hoạch & kết quả nghiệm thu chi tiết Tuần 4 (Hoàn thành 100%)
+├── 📋 Ke_Hoach_Thuc_Hien_Tuan_5.md                 <-- Kế hoạch thực hiện chi tiết Tuần 5 (Dữ liệu thật, Train thật, Phần cứng thật)
 └── 📖 README.md                                    <-- Tài liệu này
 ```
 
@@ -46,9 +47,9 @@ D:\Trí tuệ nhân tạo\HK3\Trí tuệ nhân tạo cho hệ thống nhúng\Đ�
 
 | Tuần | Mốc thời gian | Nhiệm vụ trọng tâm | Sản phẩm nghiệm thu |
 | :---: | :---: | :--- | :--- |
-| **Tuần 3** | 04/11 – 10/11 | Chốt đề tài & Nộp Đề cương chi tiết + Kế hoạch tiến độ | **0%** *(Khởi tạo đề cương & kế hoạch nộp Giảng viên)* |
-| **Tuần 4** | 11/11 – 17/11 | Thu thập dataset; script tăng cường ảnh; chuẩn bị kit ESP32-S3 | **0%** *(Dự kiến)* |
-| **Tuần 5** | 18/11 – 24/11 | Train mô hình Baseline; test camera ESP32-S3; **Nộp Báo cáo Tuần 1** | **0%** *(Dự kiến)* |
+| **Tuần 3** | 04/11 – 10/11 | Chốt đề tài & Nộp Đề cương chi tiết + Kế hoạch tiến độ | 🟢 **100% Hoàn thành** *(Đã nộp Giảng viên)* |
+| **Tuần 4** | 11/11 – 17/11 | Zero-Waiting Pipeline: Data Contract 12 lớp, mock benchmark, ngoại vi & BOM | 🟢 **100% Hoàn thành** *(Đã nghiệm thu & merge main)* |
+| **Tuần 5** | 18/11 – 24/11 | Dataset thật $\ge 1.000$ ảnh; train full baseline; nạp bo thật; **Nộp Báo cáo Tuần 1** | 🟡 **Đang thực hiện** *(18/11 – 24/11/2026)* |
 | **Tuần 6** | 25/11 – 01/12 | Tối ưu hóa TinyML: Pruning & Quantization INT8; **Nộp Báo cáo Tuần 2** | **0%** *(Dự kiến)* |
 | **Tuần 7** | 02/12 – 08/12 | Nạp model lên ESP32-S3; ráp hộp ghi-đông; đo FPS/độ trễ; **Nộp Báo cáo Tuần 3** | **0%** *(Dự kiến)* |
 | **Tuần 8** | 09/12 – 15/12 | **BÁO CÁO VÀ BẢO VỆ NGHIỆM THU ĐỒ ÁN ĐỢT 1 TRƯỚC LỚP** | **0%** *(Dự kiến)* |
