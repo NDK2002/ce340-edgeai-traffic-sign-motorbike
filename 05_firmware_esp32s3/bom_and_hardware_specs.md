@@ -53,17 +53,17 @@ Chia 4 nhóm: **A–B mua ngay** (test trên bàn Tuần 5–6), **C mua khi g�
 
 | # | Linh kiện | SL | Ghi chú chọn mua | Giá ước tính |
 |---|---|:---:|---|---:|
-| A1 | Bo ESP32-S3-CAM N16R8 + OV2640 | 2 | Như Mục 1 (1 chính + 1 dự phòng) | 400–600k |
+| A1 | Bo ESP32-S3-CAM N16R8 + OV2640 | 1 | Như Mục 1 (1 bo chạy toàn bộ đồ án; chỉ mua thêm bo 2 dự phòng nếu dư quỹ) | 200–280k |
 
 ### B. Ngoại vi cảnh báo
 
 | # | Linh kiện | SL | Ghi chú chọn mua | Giá ước tính |
 |---|---|:---:|---|---:|
-| B1 | **OLED 1.3" I2C 128×64, chip SH1106, màu trắng** | 1 | Loại **4 chân I2C** (không lấy loại SPI 7 chân). Chọn **màu trắng một màu** — sáng và tương phản tốt hơn loại 2 màu vàng/xanh. ⚠️ Nhiều module 1.3" xếp chân **VCC–GND–SCL–SDA** (ngược với 0.96") → đọc chữ in trên module trước khi cắm | 80–120k |
-| B4 | **Buzzer passive 5V** Ø12 mm | 2 | Kênh phụ: phát được nhiều kiểu tiếng (cấm: dồn dập; tốc độ: 1 tiếng), âm lượng vừa. Có nút tắt | 5–10k |
-| B4b | Transistor NPN **S8050** + điện trở 1kΩ | 2 | "Công tắc" để GPIO 3.3V bật buzzer 5V (1 con dùng, 1 con dự phòng) | 5k |
-| B5 | **LED đỏ siêu sáng 5mm** + điện trở 220–330Ω | 5 | Cùng OLED làm kênh cảnh báo chính; loại siêu sáng để nhìn thấy cả ban ngày | 5–10k |
-| B6 | *(Tùy chọn)* Nút nhấn 6×6 mm hoặc 12 mm | 1 | Tắt cảnh báo; loại nhấn-nhả | 5–10k |
+| B1 | **OLED 1.3" I2C 128×64, chip SH1106, màu trắng** | 1 | Loại **4 chân I2C** (không lấy SPI 7 chân). Chọn **màu trắng một màu** — sáng và tương phản tốt hơn loại 2 màu vàng/xanh. ⚠️ Đọc thứ tự chân in trên module trước khi cắm (`VCC GND SCL SDA` hoặc `GND VCC SCL SDA`) | 80–100k |
+| B4 | **Buzzer passive 5V** Ø12 mm | 1–2 | Còi thụ động phát xung PWM đa âm điệu (cấm: dồn dập; cảnh báo: ngắt quãng; hiệu lệnh: 1 bíp). ⚠️ **Không mua Active Buzzer** vì chỉ kêu được 1 tiếng đơn điệu | 5–10k |
+| B4b | Transistor NPN **S8050** + điện trở 1kΩ | 1–2 | Mạch đệm kích dòng từ GPIO 3.3V điều khiển còi 5V | 5k |
+| B5 | **LED đỏ siêu sáng 5mm** + điện trở 220–330Ω | 2–5 | Cảnh báo thị giác chớp nháy khi đi đường ồn ào | 5k |
+| B6 | *(Tùy chọn)* Nút nhấn mini 6×6 mm | 1 | Nút Mute ngắt cảnh báo âm thanh (nối GPIO47) | 5k |
 
 ![Hình minh hoạ các linh kiện nhóm B để nhận dạng khi mua](images/bom_group_b.svg)
 
@@ -80,15 +80,15 @@ Chia 4 nhóm: **A–B mua ngay** (test trên bàn Tuần 5–6), **C mua khi g�
 
 </details>
 
-### C. Gắn tạm lên xe (quay clip ngắn khi trời khô)
+### C. Gắn tạm lên xe (để dành Tuần 7 — chưa cần mua ở Tuần 5)
 
 | # | Linh kiện | SL | Ghi chú chọn mua | Giá ước tính |
 |---|---|:---:|---|---:|
-| C1 | **Hộp nhựa nhỏ có nắp** (~100×70×40 mm, hộp linh kiện hoặc hộp đựng đồ ăn) | 1 | Chỉ để che bụi và giữ breadboard khi gắn tạm — **không cần kín nước** | 15–40k |
-| C2 | Giá kẹp điện thoại xe máy | 1 | **Dùng đồ có sẵn** của nhóm; kẹp hộp như kẹp điện thoại | (có sẵn) |
-| C3 | Băng keo **3M VHB** 2 mặt + dây rút nhựa | 1 | Dán breadboard và cáp camera vào hộp, cố định cáp USB dọc ghi-đông | 30–50k |
-| C4 | Cáp USB-C **1,5 m lõi tốt** (ghi 2A–3A) | 1 | Cáp rẻ lõi nhỏ sụt áp làm bo reset khi camera + AI chạy cùng lúc | 50–80k |
-| C5 | Sạc dự phòng 10.000 mAh, 5V/2A | 1 | Đặt trong cốp/túi. Dùng cái sẵn có của nhóm | (có sẵn) |
+| C1 | **Hộp nhựa nhỏ có nắp** (~100×70×40 mm) | 1 | Che bụi khi gắn tạm lên xe Tuần 7 — **không cần kín nước** | 15–30k *(hoặc tận dụng hộp cũ)* |
+| C2 | Giá kẹp điện thoại xe máy | 1 | **Dùng đồ có sẵn** của thành viên trong nhóm | (có sẵn) |
+| C3 | Băng keo **3M VHB** 2 mặt + dây rút nhựa | 1 | Cố định mạch và dây cáp dọc ghi-đông | 20–30k |
+| C4 | Cáp USB-C **1,5 m lõi tốt** (ghi 2A–3A) | 1 | Cáp lõi tốt tránh sụt áp gây reset bo | 40–60k *(hoặc dùng cáp có sẵn)* |
+| C5 | Sạc dự phòng 10.000 mAh, 5V/2A | 1 | Cấp nguồn độc lập, dùng đồ sẵn có | (có sẵn) |
 
 ![Hình minh hoạ các linh kiện nhóm C để nhận dạng khi mua](images/bom_group_c.svg)
 
@@ -103,17 +103,18 @@ Chia 4 nhóm: **A–B mua ngay** (test trên bàn Tuần 5–6), **C mua khi g�
 
 </details>
 
-### D. Đo đạc & dụng cụ
+### D. Đo đạc & dụng cụ thực nghiệm
 
 | # | Linh kiện | SL | Ghi chú | Giá ước tính |
 |---|---|:---:|---|---:|
-| D1 | **USB tester** đo dòng/áp (KWS-V20 / UM25C) | 1 | Bắt buộc cho số liệu mA trong báo cáo (đọc trong lúc firmware chạy soak 30 phút) | 80–150k |
-| D2 | Thẻ **microSD 8–32 GB** | 1 | Firmware ghi số liệu ra `/sdcard/bench.csv`; sau này lưu thêm ảnh camera | 50–80k |
-| D3 | Breadboard 400 lỗ + dây jumper **đực–đực và cái–đực** | 1 bộ | Bo ESP32-S3 rộng, cắm lên breadboard 400 có thể che hết lỗ hai bên → dùng dây **cái–đực** nối thẳng từ chân bo ra breadboard | 50–80k |
-| D4 | Cáp Type-C **có truyền dữ liệu** | 1–2 | Nạp code; cáp chỉ sạc sẽ không nhận cổng COM | 30–50k |
-| D5 | Súng bắn keo nến | — | Chấm keo giữ dây jumper khi gắn tạm. Mượn nếu được | (mượn) |
+| D1 | **USB tester** đo dòng/áp (KWS-V20) | 1 | Đo mA nộp báo cáo. **Ưu tiên mượn phòng Lab trường / bạn bè** | (mượn hoặc ~70k) |
+| D2 | Thẻ **microSD 8–32 GB** | 1 | Ghi `/sdcard/bench.csv`. **Tận dụng thẻ cũ có sẵn** (hoặc dùng Flash 16MB LittleFS tiết kiệm 0₫) | (có sẵn hoặc ~40k) |
+| D3 | **Breadboard 830 lỗ (loại dài)** + tép dây jumper Cái–Đực & Đực–Đực | 1 bộ | Bo ESP32-S3 to, dùng loại 830 lỗ để cắm thẳng bo mạch và ngoại vi gọn gàng | 40–50k |
+| D3b | **Tụ hóa $100\mu\text{F} - 470\mu\text{F}$ 16V** | 1–2 | Cắm song song 5V–GND chống sụt áp Brownout khi camera chụp | 2k |
+| D4 | Cáp Type-C **có truyền dữ liệu** | 1 | Nạp code qua cổng UART/USB | (dùng cáp sẵn có) |
+| D5 | Súng bắn keo nến | — | Cố định chân cắm khi gắn xe Tuần 7 | (mượn) |
 
-**Tổng ước tính:** khoảng **0,8 – 1,3 triệu ₫** (A ~0,4–0,6 triệu cho 2 bo; B ~0,1–0,17 triệu; C ~0,1–0,17 triệu; D ~0,2–0,36 triệu). Nếu chỉ mua 1 bo thì còn khoảng **0,6–1,0 triệu ₫**.
+**Tổng chi phí thực tế cần chi ở Tuần 5:** chỉ khoảng **380.000 – 480.000 ₫** (mỗi thành viên đóng khoảng **80.000 – 95.000 ₫**, giảm hơn một nửa so với dự toán ban đầu mà vẫn đảm bảo 100% đầy đủ chức năng và số liệu thực nghiệm).
 
 ---
 
