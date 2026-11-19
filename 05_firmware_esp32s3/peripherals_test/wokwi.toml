@@ -2,3 +2,4 @@
 version = 1
 firmware = '.pio/build/esp32s3_n16r8/firmware.bin'
 elf = '.pio/build/esp32s3_n16r8/firmware.elf'
+

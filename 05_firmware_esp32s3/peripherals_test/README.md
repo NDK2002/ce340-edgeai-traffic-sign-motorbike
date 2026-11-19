@@ -86,3 +86,4 @@ pio device monitor
 1. Cài đặt tiện ích mở rộng **Wokwi for VS Code**.
 2. Mở file `diagram.json`.
 3. Bấm **Play** (nút màu xanh) để quan sát màn hình OLED vẽ icon, đèn LED nháy và nghe còi phát tiếng trên trình duyệt mà không cần mạch thật.
+

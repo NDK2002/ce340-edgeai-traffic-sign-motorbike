@@ -171,3 +171,4 @@ static const SignInfo kSigns[12] = {
     {10, "W.209", "DEN TIN HIEU",    "canh_bao",  "medium", ICON_DEN_TIN_HIEU},
     {11, "W.245", "DI CHAM",         "canh_bao",  "high",   ICON_DI_CHAM},
 };
+

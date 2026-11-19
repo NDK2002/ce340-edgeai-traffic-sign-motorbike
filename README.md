@@ -22,19 +22,21 @@
 
 ---
 
-### CẤU TRÚC CÁC FILE TRONG THƯ MỤC ĐỒ ÁN
+### CẤU TRÚC CÁC THƯ MỤC VÀ FILE TRONG DỰ ÁN
 
 ```
 D:\Trí tuệ nhân tạo\HK3\Trí tuệ nhân tạo cho hệ thống nhúng\Đồ án\
+├── 📁 01_dataset/                                 <-- Thu thập, gán nhãn & Data Contract 12 lớp (classes.yaml)
+├── 📁 02_augmentation/                            <-- Pipeline Albumentations tăng cường thời tiết phức tạp
+├── 📁 03_models_benchmark/                         <-- Huấn luyện & đánh giá baseline (YOLOv8n, YOLOv5u, MobileNetV2-SSD)
+├── 📁 04_tinyml_optimization/                     <-- Tối ưu hóa TinyML: Pruning & Full INT8 Quantization cho ESP32-S3
+├── 📁 05_firmware_esp32s3/                        <-- BOM phần cứng, firmware benchmark TFLM & test ngoại vi ghi-đông
+├── 📁 06_reports_slides/                          <-- Báo cáo tuần, tài liệu kịch bản thực tế xe máy & slide nghiệm thu
 ├── 📄 De_Cuong_Chi_Tiet_Do_An_CE340.docx           <-- [FILE CHÍNH THỨC NỘP THẦY] Đề cương chi tiết (Word)
 ├── 📊 Ke_Hoach_Thuc_Hien_Do_An_CE340_Nhom_Hon.xlsx   <-- [FILE CHÍNH THỨC NỘP THẦY] Bảng tiến độ 8 tuần (Excel)
 ├── 📝 De_Cuong_Chi_Tiet_Do_An_CE340.md             <-- Bản thảo Markdown đề cương chi tiết đầy đủ nội dung
 ├── 📑 Khao_Sat_De_Tai_Va_Phuong_An_Thiet_Ke_CE340.md <-- Báo cáo phân tích tính mới & so sánh gắn xe vs mũ bảo hiểm
-├── 📘 1. Mẫu Đề cương chi tiết CITD CE340.docx     <-- Mẫu đề cương gốc từ Giảng viên
-├── 📗 2. Mẫu Kế hoạch thực hiện đồ án, chuyên đề.xlsx <-- Mẫu kế hoạch gốc từ Giảng viên
-├── 📙 3. Mẫu Báo cáo tuần x.docx                   <-- Mẫu nhật ký báo cáo tiến độ tuần (dùng từ Tuần 5-7)
-├── 📕 4. Mẫu Báo cáo đồ án.docx                    <-- Mẫu báo cáo tổng kết đồ án cuối kỳ 50 trang
-├── 📊 5. Mẫu Slide báo cáo.pptx                    <-- Mẫu slide thuyết trình bảo vệ nghiệm thu trước lớp
+├── 📋 Ke_Hoach_Thuc_Hien_Tuan_4.md                 <-- Kế hoạch & kết quả nghiệm thu chi tiết Tuần 4
 └── 📖 README.md                                    <-- Tài liệu này
 ```
 

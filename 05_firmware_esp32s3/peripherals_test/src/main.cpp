@@ -163,3 +163,4 @@ extern "C" void app_main(void) {
     sign_idx = (sign_idx + 1) % 12;
   }
 }
+

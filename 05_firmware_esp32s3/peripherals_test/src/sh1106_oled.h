@@ -192,3 +192,4 @@ class SH1106Oled {
 };
 
 } // namespace ce340
+

@@ -3,3 +3,4 @@ idf_component_register(
     INCLUDE_DIRS "." "../../mock_inference_test/src"
     REQUIRES driver esp_timer esp_psram freertos
 )
+
