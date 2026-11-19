@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "author": "Tran Hoang Hon (CE340)",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-sh1106", "id": "oled", "top": -120, "left": -80, "attrs": { "i2cAddress": "0x3c" } },
+    { "type": "wokwi-buzzer", "id": "bz", "top": -80, "left": 180, "attrs": { "hasTransistor": "yes" } },
+    { "type": "wokwi-led", "id": "led", "top": 50, "left": 180, "attrs": { "color": "red" } },
+    { "type": "wokwi-pushbutton", "id": "btn", "top": 140, "left": 180, "attrs": { "color": "green" } }
+  ],
+  "connections": [
+    [ "esp:GND.1", "oled:GND", "black", [ "v0" ] ],
+    [ "esp:3V3.1", "oled:VCC", "red", [ "v0" ] ],
+    [ "esp:42", "oled:SCL", "yellow", [ "v0" ] ],
+    [ "esp:41", "oled:SDA", "green", [ "v0" ] ],
+    [ "esp:GND.2", "bz:2", "black", [ "v0" ] ],
+    [ "esp:14", "bz:1", "orange", [ "v0" ] ],
+    [ "esp:GND.3", "led:C", "black", [ "v0" ] ],
+    [ "esp:21", "led:A", "red", [ "v0" ] ],
+    [ "esp:GND.4", "btn:2.1", "black", [ "v0" ] ],
+    [ "esp:47", "btn:1.1", "blue", [ "v0" ] ]
+  ]
+}

@@ -11,4 +11,4 @@
 | [`images/`](./images/) | Sơ đồ đấu dây, hướng dẫn chọn bo/camera, hình minh hoạ linh kiện nhóm B/C | Xong |
 | [`mock_inference_test/`](./mock_inference_test/README.md) | `[D2]` Firmware benchmark: Flash/PSRAM, Tensor Arena và `Invoke()` của mọi model trong `models.h` (PSRAM vs SRAM), thời gian chụp QVGA/VGA, pipeline đầu-cuối theo phương án A/B/C/C2, soak 30 phút (mA, nhiệt độ, FPS), ghi số liệu ra `/sdcard/bench.csv` | Build thành công, **chưa chạy trên bo thật** |
 | [`pio.sh`](./pio.sh) | Build/nạp firmware khi repo nằm ở đường dẫn có dấu cách | Xong |
-| `peripherals_test/` | `[H2]` Driver test OLED SH1106 / buzzer / LED (Hôn) | Chưa có |
+| [`peripherals_test/`](./peripherals_test/README.md) | `[H2]` Driver test OLED SH1106 / buzzer PWM / LED đỏ / nút mute (Hôn) | Hoàn thành |
