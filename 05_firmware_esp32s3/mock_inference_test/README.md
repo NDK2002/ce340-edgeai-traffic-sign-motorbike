@@ -34,6 +34,12 @@ Mọi dòng số liệu bắt đầu bằng `CSV,` (dòng `CSV,#...` là tiêu �
 grep '^CSV,' bench_log.txt > bench.csv
 ```
 
+Đổi thành bảng Markdown + biểu đồ cho báo cáo (đọc được cả `bench.csv` chép từ thẻ nhớ lẫn log Serial; biểu đồ cần `matplotlib`):
+
+```bash
+python3 05_firmware_esp32s3/tools/bench_report.py bench.csv -o bench_report.md --charts charts/
+```
+
 ### Lưu ý khi đọc số liệu
 
 - Bước `model` cho input toàn số 0: chỉ đo thời gian, không đo độ chính xác.

@@ -30,11 +30,14 @@ rsync -a --delete "$REPO/01_dataset/mock_assets" "$MIRROR/01_dataset/"
 rsync -a --delete --include '*/' --include '*.h' --include '*.tflite' --exclude '*' \
   "$REPO/04_tinyml_optimization/" "$MIRROR/04_tinyml_optimization/"
 
-# Code firmware. Không đụng tới cache build (.pio, managed_components, sdkconfig.<env>) ở gương
+# Toàn bộ thư mục firmware (các project dùng chung header của nhau, ví dụ traffic_sign_alert
+# lấy driver từ peripherals_test). Không đụng tới cache build (.pio, managed_components,
+# sdkconfig.<env>, dependencies.lock) ở gương.
 rsync -a --delete \
-  --exclude .pio --exclude managed_components \
+  --exclude .pio --exclude managed_components --exclude dependencies.lock \
+  --exclude images --exclude tools \
   --include sdkconfig.defaults --exclude 'sdkconfig.*' \
-  "$SRC" "$MIRROR/05_firmware_esp32s3/"
+  "$REPO/05_firmware_esp32s3/" "$MIRROR/05_firmware_esp32s3/"
 
 echo ">> Build tại: $MIRROR/05_firmware_esp32s3/$PROJECT"
 cd "$MIRROR/05_firmware_esp32s3/$PROJECT"
