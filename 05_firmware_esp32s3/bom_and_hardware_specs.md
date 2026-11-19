@@ -1,10 +1,11 @@
 # [D1] BOM & Thông số phần cứng — ESP32-S3-CAM N16R8
 
-* **Phụ trách:** Vũ Văn Duy (`26410031`) — Kỹ sư Nhúng & Thực nghiệm
-* **Trạng thái:** 🟡 Đề xuất — chờ đặt hàng & xác nhận pinout trên bo thật
-* **Mở khóa cho:** `[H2]` Hôn (đấu OLED/Buzzer/LED theo bảng chân Mục 3), `[S1]/[S2]` Sơn (ngân sách bộ nhớ Mục 4)
+* **Phụ trách kỹ thuật phần cứng:** Vũ Văn Duy (`26410031`) — Kỹ sư Nhúng & Thực nghiệm
+* **Rà soát & Tinh gọn:** Trần Hoàng Hôn (`26410046`) — Trưởng nhóm / PM & QA *(Đã rà soát & chốt ngày 19/11/2026)*
+* **Trạng thái:** 🟢 **ĐÃ CHỐT TINH GỌN (Chốt mua 1 bo, Breadboard 830 lỗ, tụ lọc nguồn — Sẵn sàng đặt hàng Tuần 5)**
+* **Mở khóa cho:** `[H2]/[H4]` Hôn (tích hợp driver OLED/Buzzer/LED), `[S3]/[S4]` Sơn (ngân sách bộ nhớ và C-array header), `[D3]/[D4]` Duy (lắp ráp breadboard và đo đạc thực tế)
 
-> Giá trong tài liệu là **ước tính tham khảo** (tháng 11/2026); kiểm tra lại trên Shopee / Lazada / Hshop.vn / ICDayRoi / Nshop trước khi đặt.
+> Giá trong tài liệu là **ước tính tham khảo thực tế** (tháng 11/2026 trên Shopee / Lazada); kiểm tra lại trước khi đặt. Đã tối ưu ngân sách để mỗi thành viên chỉ đóng khoảng **80.000 – 95.000 ₫**.
 
 ---
 
@@ -39,7 +40,9 @@
 
 Không shop nào ở trên ghi sơ đồ chân camera, nên vẫn phải kiểm tra bằng firmware `mock_inference_test` khi nhận hàng (Mục 6).
 
-👉 **Mua 2 bo** (1 chính + 1 dự phòng): chỉ thêm khoảng 200k nhưng tránh mất cả tuần nếu bo bị chập/cháy.
+👉 **Chốt mua 1 bo:** Hệ thống chỉ cần duy nhất **1 bo ESP32-S3-CAM N16R8** là hoạt động đầy đủ 100% tính năng (chụp ảnh, chạy AI INT8, OLED, còi PWM, log thẻ nhớ). Việc chốt 1 bo giúp tiết kiệm ngay ~200k–250k cho nhóm. Để an toàn, luôn rút cáp USB Type-C ra trước khi cắm/rút dây trên breadboard; chỉ mua thêm bo thứ 2 nếu nhóm còn dư dả quỹ.
+
+⚠️ **Lưu trữ dữ liệu:** Tuyệt đối **không dùng ổ cứng di động / USB ngoài** vì ổ cứng ăn dòng lớn (0.5A–1A) gây sụt áp sập nguồn chip (`Brownout Crash`) và làm nặng firmware. Sử dụng khe cắm thẻ MicroSD có sẵn trên bo (chỉ ăn dòng 15–30mA) hoặc tận dụng luôn **bộ nhớ Flash 16MB có sẵn của chip (qua thư viện `LittleFS`)** để ghi file `bench.csv` hoàn toàn miễn phí.
 
 ---
 
@@ -233,6 +236,6 @@ Mẹo: thu nhỏ ảnh còn khoảng 1600 px chiều ngang trước khi commit �
 
 ## 8. Trạng thái đặt hàng
 
-| Ngày | Linh kiện | Shop | Giá thực tế | Dự kiến nhận |
-|---|---|---|---:|---|
-| | | | | |
+| Ngày | Danh mục linh kiện | Người phụ trách | Giá ước tính | Trạng thái & Ghi chú |
+|---|---|:---:|---:|---|
+| **19/11/2026** | **Trọn bộ linh kiện tinh gọn Tuần 5:**<br>• 1 Bo ESP32-S3-CAM N16R8 (Cam OV2640 góc 66°)<br>• 1 Màn hình OLED 1.3" I2C SH1106 trắng<br>• Còi Passive Buzzer 5V + Transistor S8050<br>• LED đỏ 5mm, điện trở 220Ω, nút nhấn Mute<br>• Breadboard 830 lỗ (loại dài) + tép dây Cái-Đực<br>• 1 Tụ hóa lọc nguồn 220uF–470uF 16V | **Vũ Văn Duy** (`[D3]`) | **~380.000 – 450.000 ₫** | 🟢 **ĐÃ RÀ SOÁT & DUYỆT CHỐT**<br>Trưởng nhóm Trần Hoàng Hôn đã rà soát lại và chốt danh mục tinh gọn. Duy tiến hành đặt hàng Shopee ngay để kịp nhận linh kiện chạy thực nghiệm Tuần 5. |
