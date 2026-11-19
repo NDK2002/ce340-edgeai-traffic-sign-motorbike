@@ -113,3 +113,4 @@ Tuần này mình chuyển toàn bộ toolchain sang nén mô hình thật:
 
 Tuần 4 em làm mảng mock rất mượt rồi, tuần này áp dụng đúng quy trình đó cho model thật là chuẩn bài nha em!
 ```
+
