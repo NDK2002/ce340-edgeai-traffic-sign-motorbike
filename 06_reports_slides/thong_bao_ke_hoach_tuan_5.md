@@ -47,18 +47,19 @@ Chi tiết kế hoạch từng ngày, ma trận phụ thuộc và checklist DoD 
 
 ### 2.1. Gửi anh Vũ Văn Duy (`[D3]`, `[D4]`) — Xưng "em - anh"
 ```text
-Anh Duy ơi, em gửi anh kế hoạch và đầu việc của anh trong Tuần 5 này nhé:
+Anh Duy ơi, em đã rà soát lại bản BOM phần cứng tại 05_firmware_esp32s3/bom_and_hardware_specs.md và tinh gọn lại 4 điểm sau để anh đặt hàng nhé:
 
-Tuần này trọng tâm của anh là chuyển từ mock sang bo mạch thật:
 1. Đầu việc [D3] (18/11 – 20/11):
-   - Khi nhận được kit ESP32-S3-CAM N16R8 và linh kiện, nhờ anh cắm hoàn chỉnh mạch trên breadboard theo đúng sơ đồ chân an toàn né dải GPIO 33–37 như anh đã vẽ nhé.
-   - Nạp thử code test camera OV2640 xem hình ảnh ổn định chưa và quét thử I2C màn hình OLED SH1106. Nhờ anh chụp giúp em 2-3 tấm ảnh chụp mạch thực tế để em đưa vào báo cáo tiến độ nộp Thầy.
+   - Bo mạch: Chốt mua 1 bo ESP32-S3-CAM N16R8 kèm camera OV2640 góc thường ~66° (không lấy lens góc rộng 120° để tránh méo ảnh AI).
+   - Breadboard & Nguồn: Đổi sang Breadboard 830 lỗ (loại dài) để cắm vừa bo mạch; thêm 1 tụ hóa 220uF–470uF 16V cắm 5V–GND để chống sụt áp khi chụp ảnh.
+   - Phụ kiện xe: Hộp nhựa và giá kẹp xe để dành sang Tuần 7 mua sau; thẻ nhớ microSD tận dụng thẻ cũ hoặc ghi thẳng vào Flash 16MB (LittleFS).
+   - Khi nhận hàng, nhờ anh cắm hoàn chỉnh mạch trên breadboard 830 lỗ theo đúng sơ đồ an toàn né dải GPIO 33–37 như anh đã vẽ, nạp code test camera OV2640 và quét I2C màn hình OLED SH1106. Nhờ anh chụp giúp em 2-3 tấm ảnh chụp mạch thực tế để em đưa vào báo cáo tiến độ nộp Thầy.
 2. Đầu việc [D4] (22/11 – 23/11):
    - Khi Sơn xuất xong file C-array mô hình thật (traffic_sign_model_int8.h) và em tích hợp xong khung FreeRTOS, nhờ anh nạp lên kit thật để chạy suy luận thực tế.
    - Đo đạc giúp em các thông số thực: FPS, Latency từng chặng (chụp -> tiền xử lý -> suy luận -> hiển thị), RAM/PSRAM chiếm dụng và dòng tiêu thụ (mA).
    - Nhờ anh quay 1 đoạn clip ngắn khoảng 1-2 phút quay cảnh mạch nhận diện biển báo trên bàn test để làm minh chứng nộp báo cáo.
 
-Có vướng mắc gì về chân cẳng hay thư viện ngoại vi thì anh cứ ới em ngay nhé ạ!
+👉 Tổng kinh phí rút xuống chỉ còn khoảng ~380k – 450k (mỗi bạn ~80k–90k). Nhờ anh Duy đặt hàng theo danh mục này nhé ạ!
 ```
 
 ---

@@ -116,7 +116,7 @@ flowchart TD
 
 | Mã CV & Hạn | Đầu việc Đồ án | Đầu vào (Inputs) & Điều kiện chờ | Sản phẩm bàn giao cụ thể (Deliverables) | Tiêu chí nghiệm thu (Acceptance Criteria) |
 | :--- | :--- | :--- | :--- | :--- |
-| **`[D3]`**<br>18/11 – 20/11 | Tiếp nhận bo `ESP32-S3-CAM N16R8`, cắm mạch breadboard hoàn chỉnh theo sơ đồ an toàn | Bo mạch thật, camera OV2640, OLED SH1106, Buzzer, LED, điện trở, dây cắm, nguồn 5V | • Mạch vật lý hoàn chỉnh trên breadboard.<br>• Chụp 3 ảnh minh chứng thực tế: Toàn cảnh mạch, Cận cảnh nối chân né GPIO 33-37, Cụm màn hình OLED & còi.<br>• Firmware smoke test kiểm tra camera và I2C. | • Bo mạch khởi động ổn định, nạp được code qua cổng Type-C.<br>• Camera OV2640 chụp ảnh bình thường (không sọc nhiễu, không treo bus).<br>• Quét I2C phát hiện đúng địa chỉ `0x3C` của OLED SH1106. |
+| **`[D3]`**<br>18/11 – 20/11 | Tiếp nhận 1 bo `ESP32-S3-CAM N16R8`, cắm breadboard 830 lỗ hoàn chỉnh theo sơ đồ an toàn | Bo mạch thật (OV2640 66°), OLED SH1106 1.3", Buzzer passive 5V, LED đỏ, Breadboard 830 lỗ, tụ hóa lọc nguồn 220uF–470uF, dây cắm Cái-Đực | • Mạch vật lý hoàn chỉnh trên breadboard 830 lỗ có tụ lọc nguồn chống sụt áp.<br>• Chụp 3 ảnh minh chứng thực tế: Toàn cảnh mạch, Cận cảnh nối chân né GPIO 33-37, Cụm màn hình OLED & còi.<br>• Firmware smoke test kiểm tra camera và I2C. | • Bo mạch khởi động ổn định, nạp được code qua cổng Type-C.<br>• Camera OV2640 chụp ảnh bình thường (không sọc nhiễu, không treo bus).<br>• Quét I2C phát hiện đúng địa chỉ `0x3C` của OLED SH1106. |
 | **`[D4]`**<br>22/11 – 23/11 | Nạp mô hình INT8 thật, chạy suy luận thời gian thực & đo đạc toàn diện các thông số | Mạch thật `[D3]` + C-array `[S4]` + Khung firmware tích hợp `[H4]` | • Dự án firmware hoàn chỉnh: `05_firmware_esp32s3/real_inference_deployment/`<br>• Bảng số liệu đo đạc thực tế: `05_firmware_esp32s3/benchmark_hardware_results.csv`<br>• Video clip ngắn (~1-2 phút) quay cảnh bo mạch nhận diện biển báo thật trên bàn test. | • Tốc độ suy luận đạt $\ge 5 - 10\text{ FPS}$ (Pipeline ROI).<br>• Tổng độ trễ từ lúc chụp đến hiển thị cảnh báo $< 150\text{ ms}$.<br>• Đo đạc chính xác: RAM chiếm dụng (SRAM vs PSRAM), Flash chiếm dụng, Dòng tiêu thụ (mA). |
 
 ---
@@ -160,7 +160,7 @@ Mỗi phân hệ chỉ được xem là hoàn thành khi thỏa mãn đầy đ�
   - File header `04_tinyml_optimization/traffic_sign_model_int8.h` (`alignas(16)`) biên dịch tương thích 100% với firmware nhúng.
 
 - [ ] **4. Phần cứng & Firmware thực nghiệm (`[D3]`, `[D4]`):**
-  - Mạch thật cắm hoàn chỉnh trên breadboard: `ESP32-S3-CAM`, `SH1106 OLED`, `Buzzer PWM`, `LED`, `Button`.
+  - Mạch thật cắm hoàn chỉnh trên breadboard 830 lỗ: `ESP32-S3-CAM N16R8`, `SH1106 OLED 1.3"`, `Buzzer passive PWM`, `LED đỏ`, `Button Mute`, `Tụ lọc nguồn 220uF–470uF`.
   - Đi dây an toàn, né hoàn toàn dải bus PSRAM `GPIO 33–37`.
   - Nạp firmware chạy suy luận mô hình thật, hiển thị kết quả lên OLED và phát còi cảnh báo chính xác.
   - Đo đạc thực tế: FPS $\ge 5 - 10$, Latency tổng $< 150\text{ ms}$, RAM/PSRAM, Dòng điện tiêu thụ (mA).

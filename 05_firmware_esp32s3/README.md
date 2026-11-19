@@ -7,7 +7,7 @@
 
 | File / thư mục | Nội dung | Trạng thái |
 |---|---|---|
-| [`bom_and_hardware_specs.md`](./bom_and_hardware_specs.md) | `[D1]` Chọn bo `ESP32-S3-CAM N16R8`, BOM tối giản, bảng chân (né `GPIO 33–37` PSRAM), ngân sách bộ nhớ, cách lắp tạm và demo | Đề xuất, chờ đặt hàng |
+| [`bom_and_hardware_specs.md`](./bom_and_hardware_specs.md) | `[D1]` Chọn bo `ESP32-S3-CAM N16R8`, BOM tối giản, bảng chân (né `GPIO 33–37` PSRAM), ngân sách bộ nhớ, cách lắp tạm và demo | 🟢 Đã rà soát & duyệt chốt (1 bo, breadboard 830, tụ lọc nguồn, ~380k–450k) |
 | [`images/`](./images/) | Sơ đồ đấu dây, hướng dẫn chọn bo/camera, hình minh hoạ linh kiện nhóm B/C | Xong |
 | [`mock_inference_test/`](./mock_inference_test/README.md) | `[D2]` Firmware benchmark: Flash/PSRAM, Tensor Arena và `Invoke()` của mọi model trong `models.h` (PSRAM vs SRAM), thời gian chụp QVGA/VGA, pipeline đầu-cuối theo phương án A/B/C/C2, soak 30 phút (mA, nhiệt độ, FPS), ghi số liệu ra `/sdcard/bench.csv` | Build thành công, **chưa chạy trên bo thật** |
 | [`pio.sh`](./pio.sh) | Build/nạp firmware khi repo nằm ở đường dẫn có dấu cách | Xong |
