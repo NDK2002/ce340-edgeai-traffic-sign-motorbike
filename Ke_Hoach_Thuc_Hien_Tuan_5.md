@@ -197,3 +197,4 @@ flowchart LR
    * *Giải pháp:* Nhóm sử dụng mô hình dự phòng **MobileNetV2-SSD** (đã được thiết kế từ Tuần 4 với 100% toán tử cơ bản tương thích nhân `ESP-NN`) và bài toán phân loại vùng ROI (P1) giải mã ngoài bằng C++.
 3. **Nếu nguồn cổng USB máy tính không đủ dòng cho ESP32-S3-CAM khi bật Wi-Fi/Camera:**
    * *Giải pháp:* Sử dụng adapter nguồn 5V/2A rời cắm trực tiếp vào breadboard hoặc module hạ áp MB102 cấp nguồn riêng cho nhánh camera và còi buzzer.
+
