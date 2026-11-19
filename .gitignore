@@ -31,6 +31,10 @@ __pycache__/
 01_dataset/train/
 01_dataset/val/
 01_dataset/test/
+01_dataset/processed/
+01_dataset/**/*.zip
+01_dataset/overrides/**/sheet_*.jpg
+02_augmentation/**/*.zip
 !01_dataset/mock_assets/
 !01_dataset/mock_assets/**
 01_dataset/mock_assets/*.cache
