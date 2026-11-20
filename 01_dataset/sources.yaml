@@ -1,0 +1,92 @@
+# ==============================================================================
+# CE340 [K1] — KHAI BÁO NGUỒN DỮ LIỆU & ÁNH XẠ VỀ 12 LỚP (xem classes.yaml)
+#
+# Cách dùng:
+#   1. Tải dataset về 01_dataset/raw/<tên nguồn>/ (đã bị .gitignore chặn) hoặc lên Drive.
+#   2. Bật nguồn (enabled: true) rồi xem tên lớp THẬT của nguồn:
+#        python 01_dataset/remap_and_split.py --inspect
+#      Lệnh in sẵn khối 'map' (mặc định 'drop') — chép vào đây và sửa đích cho đúng.
+#   3. Chạy gộp & chia:   python 01_dataset/remap_and_split.py --out <thư mục dataset trên Drive>
+#      Trên Colab: thêm --raw-root /content/drive/MyDrive/<thư mục raw>
+#
+# Quy tắc ánh xạ (bắt buộc đọc ghi chú QCVN trong classes.yaml):
+#   * Ánh xạ theo Ý NGHĨA & HÌNH DẠNG biển, không theo mã chữ máy móc.
+#     P.123a/b = Cấm rẽ trái/phải  (P.103a/b là Cấm ô tô rẽ — KHÔNG phải lớp 1/2)
+#     P.104 = Cấm xe mô tô; P.111a = Cấm xe gắn máy -> cùng lớp 4 cam_xe_mo_to
+#   * Lớp gộp nhiều nghĩa (VD "No turning" gồm cả rẽ trái/phải/quay đầu, "Max Speed" gồm mọi tốc độ)
+#     KHÔNG ánh xạ thẳng được -> để 'drop' (hoặc tách lớp thủ công trên Roboflow trước).
+#   * Đích: tên lớp trong classes.yaml, hoặc class_id 0..11, hoặc 'drop'.
+#
+# Trường 'group' (chống rò rỉ frame khi chia 70/20/10):
+#   auto            gộp các bản augment Roboflow của cùng ảnh gốc ("_jpg.rf.<hash>") và frame video
+#                   dạng "<clip>_mp4-0012" hoặc "<clip>_frame_0012" -> chung 1 split
+#   stem            mỗi ảnh 1 nhóm (chỉ dùng khi các ảnh độc lập, không phải frame liên tiếp)
+#   regex:<pattern> khóa nhóm = nhóm bắt đầu tiên của regex trên tên file (không đuôi),
+#                   VD clip tự quay "q1_2026-11-20_000123.jpg" -> 'regex:^(.+)_\d+$'
+# ==============================================================================
+
+sources:
+  # Zalo AI Challenge 2020 — Traffic Sign Detection (COCO JSON, 7 lớp gộp).
+  # Tên lớp dưới đây theo mô tả cuộc thi, CHƯA kiểm tra trên file thật -> chạy --inspect để xác nhận.
+  # Chỉ "No entry" ánh xạ thẳng được; các lớp còn lại gộp nhiều loại biển nên phải 'drop'.
+  - name: zalo2020
+    enabled: false
+    format: coco
+    images: raw/zalo2020/images
+    annotations: raw/zalo2020/train_traffic_sign_dataset.json
+    group: stem
+    map:
+      "No entry": cam_di_nguoc_chieu
+      "No parking / waiting": drop
+      "No turning": drop          # gộp rẽ trái + rẽ phải + quay đầu
+      "Max Speed": drop           # gộp mọi tốc độ
+      "Other prohibition signs": drop
+      "Warning": drop
+      "Mobilization": drop
+
+  # Vietnam-Traffic-Sign-Detection v6 (Roboflow Universe, Public Domain, export "YOLOv8"):
+  # https://universe.roboflow.com/vietnam-traffic-sign-detection/vietnam-traffic-sign-detection-2i2j8/dataset/6
+  # 3680 ảnh 640x640, 58 lớp, không augment. 3499 ảnh là frame của 217 clip "IMG_xxxx-MOV_outNNNN"
+  # và 203 clip bị Roboflow rải sang nhiều split -> bắt buộc chia lại theo clip (group: auto).
+  # Ánh xạ đã kiểm tra trực quan bằng ảnh cắt bbox (18/11/2026):
+  #   - KHÔNG có R.301a (đi thẳng): R.301c/d/e là mũi tên rẽ -> lớp 5 huong_di_thang chưa có mẫu.
+  #   - P.127 gộp tốc độ 30/40/50/60/80, 61/93 clip có 2–5 biển tốc độ cạnh nhau -> tách theo track
+  #     bằng tools/speed_tracks.py (383 track đọc số bằng mắt, xem overrides/p127/track_labels.yaml).
+  #     30/80 -> drop (mẫu âm khó); không đọc được / track ghép nhầm -> loại cả ảnh.
+  #   - Ảnh image_N cũng là frame video; vài clip IMG_xxxx liền nhau quay cùng đoạn đường
+  #     -> scene_merge gộp ảnh liền kề giống nhau (ngưỡng 0.6, đã kiểm tra trực quan).
+  #   - P.245a (1 biển) thực chất là biển "ĐI CHẬM" (W.245a) bị gán nhầm mã.
+  #   - P.123a: 2/13 biển có hình ô tô (nhãn lẫn P.103) — chấp nhận, số lượng rất nhỏ.
+  #   - P.124b (Cấm ô tô quay đầu), P.103a/b/c (Cấm ô tô rẽ) để 'drop' -> thành mẫu âm khó, đúng ý đồ.
+  - name: roboflow_vn
+    enabled: true
+    format: yolo
+    root: raw/roboflow_vn        # chứa data.yaml + train/valid/test
+    group: auto
+    scene_merge: 0.6
+    label_overrides: overrides/roboflow_vn_p127.csv
+    exclude_if_present: ["P.127", "P.127_unknown", "P.127_mixed"]
+    map:
+      "P.127_40": toc_do_40          # 80 biển
+      "P.127_50": toc_do_50          # 261 biển
+      "P.127_60": toc_do_60          # 403 biển
+      "P.127_30": drop               # biển tốc độ khác -> mẫu âm khó
+      "P.127_80": drop
+      "P.102": cam_di_nguoc_chieu    # 267 biển
+      "P.123a": cam_re_trai          # 13 biển
+      "P.123b": cam_re_phai          # 99 biển
+      "P.124a": cam_quay_dau         # 70 biển
+      "P.104": cam_xe_mo_to          # 39 biển
+      "R.303": vong_xuyen            # 54 biển
+      "W.209": giao_nhau_den_tin_hieu  # 18 biển
+      "W.245a": di_cham              # 159 biển
+      "P.245a": di_cham              # 1 biển, nhầm mã
+      # Mọi lớp khác (P.103a/b/c, P.124b/c, P.130, P.131a, R.301c/d/e, W.*...) không liệt kê = drop.
+
+  # Clip tự quay đường phố TP.HCM, gán nhãn trên Roboflow / LabelImg (YOLO).
+  - name: hcmc_selfrecorded
+    enabled: false
+    format: yolo
+    root: raw/hcmc_selfrecorded
+    group: auto
+    map: {}

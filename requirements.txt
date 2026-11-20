@@ -16,7 +16,7 @@ pandas>=2.1.0
 tqdm>=4.66.0
 
 # --- Thu thập & Tăng cường dữ liệu thời tiết phức tạp (01_dataset, 02_augmentation) ---
-albumentations>=1.4.0
+albumentations>=2.0.0,<3.0.0   # augment_weather.py dùng API 2.x (ConstrainedCoarseDropout, num_holes_range, std_range)
 scikit-learn>=1.4.0
 
 # --- Huấn luyện & Benchmark mô hình (03_models_benchmark) ---
@@ -39,4 +39,5 @@ protobuf>=4.25.3,<5.0.0
 # --- Notebook & kiểm thử ---
 ipykernel>=6.29.0
 jupyter>=1.0.0
+pytest>=8.0.0
 
