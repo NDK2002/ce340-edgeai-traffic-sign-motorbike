@@ -3,7 +3,7 @@
 Chương trình chạy thật trên bo **ESP32-S3-CAM N16R8**: nhìn biển báo → báo cho người lái. Khác với `mock_inference_test/` (chỉ để đo số liệu), đây là firmware dùng khi demo.
 
 ```
-Camera (VGA) → kiểm tra camera bị che → cắt ô 160×160 góc trên-phải → model phân loại
+Camera (VGA) → kiểm tra camera bị che → cắt ô 160×160 góc trên-phải → model (classifier hoặc MobileNetV2-SSD)
             → quy tắc chống báo nhầm → OLED + LED + buzzer
 ```
 
@@ -11,8 +11,37 @@ Camera (VGA) → kiểm tra camera bị che → cắt ô 160×160 góc trên-ph�
 |---|---|
 | Bảng chân, danh sách model | `mock_inference_test/src/board_pins.h`, `models.h` (dùng chung, không copy) |
 | Driver OLED SH1106, buzzer, LED, nút, icon 12 biển | `peripherals_test/src/` của Hôn (`[H2]`) |
+| Giải mã đầu ra model (classifier / SSD, tự nhận) | `src/model_output.h` |
 | Quy tắc chống báo nhầm | `src/alert_policy.h` |
 | Phát hiện camera bị che / quá tối / quá mờ | `src/frame_quality.h` |
+
+## Model nào chạy được
+
+Firmware tự nhận loại model theo shape đầu ra lúc khởi động và in `CSV,model,<tên>,<loại>,<input>,<số anchor>,<bytes>`:
+
+| Loại | Đầu ra | Cách lấy kết quả |
+|---|---|---|
+| Classifier (đề xuất P1) | 1 tensor `[1, 12]`, hoặc `[1, 13]` nếu có lớp "không phải biển" | Lớp điểm cao nhất (tự softmax nếu là logits) |
+| MobileNetV2-SSD (`03_models_benchmark/mobilenetv2_ssd.py`) | 2 tensor `[1, A, 13]` logits + `[1, A, 4]` offset, lớp 12 là nền | Sinh anchor giống `build_anchors()`, softmax bằng bảng tra, lấy phát hiện điểm cao nhất + khung |
+
+Model thật của Sơn: chỉ cần đặt `04_tinyml_optimization/traffic_sign_model_int8.h` (định dạng của `quantize_real_model.py`). `models.h` tự đưa model đó lên đầu danh sách, cả firmware này lẫn `mock_inference_test` dùng nó, không cần sửa code. **Lần đầu thêm (hoặc xoá) file model phải build sạch một lần**, vì PlatformIO không tự thấy header mới xuất hiện qua `__has_include`:
+
+```bash
+./05_firmware_esp32s3/pio.sh traffic_sign_alert run -t clean
+```
+
+```bash
+./05_firmware_esp32s3/pio.sh traffic_sign_alert run
+```
+
+Nếu model là YOLO (nhánh ONNX, ảnh `[0, 1]`) thì thêm `-DCE340_REAL_MODEL_NORM=NORM_0_TO_1` vào `build_flags`.
+
+**Yêu cầu khi export model (firmware contract):**
+
+- **Batch cố định = 1.** Export batch động (`None`) sinh op `SHAPE` / `STRIDED_SLICE` / `PACK`, và đầu ra trong file có shape giả `[1, 1, x]`. TFLite Micro dừng ngay lúc cấp phát: `RESHAPE ... num_input_elements != num_output_elements (2304 != 4)`. Cách export đúng: `tf.function(...).get_concrete_function(tf.TensorSpec([1, S, S, 3], tf.float32))` rồi `TFLiteConverter.from_concrete_functions(...)`. Đã kiểm chứng bằng TFLite Micro (gói Python `tflite-micro`): bản batch = 1 chạy được, kết quả khớp TFLite thường (lệch ≤ 4 bước lượng tử).
+- **Full INT8** (input, output, weights, activations) và chỉ dùng op có trong `resolver()` của `src/main.cpp`. MobileNetV2-SSD batch = 1 chỉ cần `CONV_2D`, `DEPTHWISE_CONV_2D`, `ADD`, `CONCATENATION`, `RESHAPE`.
+- **Ảnh vào vuông.** Với SSD, số anchor phải đúng `ssd_anchor_count(cạnh ảnh)`: 96 → 1352, 128 → 2388, 160 → 3752, 192 → 5380, 320 → 14936 (đã đối chiếu với model Keras). Lệch thì firmware báo lỗi ngay lúc khởi động.
+- MobileNetV2-SSD đủ backbone khoảng **2,9 MB** (INT8), vừa phân vùng app 6 MB. Tốc độ chạy trên chip chưa đo.
 
 ## Hoạt động thế nào
 
@@ -88,6 +117,20 @@ c++ -std=c++17 -I05_firmware_esp32s3/traffic_sign_alert/src 05_firmware_esp32s3/
 
 10 bài kiểm thử cho quy tắc chống báo nhầm (cần 3 khung, chỉ báo 1 lần, khoảng chờ 10 giây, nhớ biển tốc độ…) và phát hiện camera bị che — hiện **đạt cả 10**.
 
+```bash
+c++ -std=c++17 -O2 -I05_firmware_esp32s3/traffic_sign_alert/src 05_firmware_esp32s3/traffic_sign_alert/host_tests/test_model_output.cpp -o /tmp/test_model_output && /tmp/test_model_output
+```
+
+16 bài kiểm thử cho bộ giải mã đầu ra (`src/model_output.h`), đối chiếu với code Python của dự án qua `host_tests/ssd_fixture.h`:
+
+- Số anchor ở 5 cỡ ảnh khớp model Keras thật.
+- Anchor C++ trùng từng bit với `build_anchors()`.
+- Phát hiện tốt nhất (anchor, lớp, điểm softmax, khung) khớp giải mã numpy theo `_decode_predictions()`. Bản INT8 dùng bảng tra exp cho cùng kết quả với bản FP32.
+- Classifier xử lý cả xác suất lẫn logits INT8.
+- Nhận dạng đúng loại model, kể cả khi thứ tự 2 đầu ra SSD bị đảo, và báo lỗi rõ khi model export batch động.
+
+Hiện **đạt cả 16**. Sinh lại dữ liệu đối chiếu (cần `tensorflow` + `tf-keras`): `python 05_firmware_esp32s3/tools/make_ssd_fixture.py`.
+
 ## Khi có bo
 
 1. Nạp, kiểm tra OLED hiện "DANG QUAN SAT", buzzer kêu chào lúc khởi động. Trong log tìm:
@@ -95,7 +138,7 @@ c++ -std=c++17 -I05_firmware_esp32s3/traffic_sign_alert/src 05_firmware_esp32s3/
    - `CSV,sensor,OV3660,...` (hoặc OV2640) → loại camera thật. Đưa một biển báo vào **góc trên-phải** khung hình và xem cột `top` trong `CSV,status` có đổi không; nếu ảnh vẫn ngược, chỉnh `set_vflip` / `set_hmirror` trong `mock_inference_test/src/camera_sensor.h`.
 2. **Hiệu chỉnh ngưỡng camera bị che:** xem cột `brightness`, `sharpness` trong `CSV,status` lúc camera nhìn bình thường và lúc lấy tay che → sửa `dark_below`, `flat_below` trong `src/frame_quality.h`.
 3. **Ngưỡng điểm `min_score`:** model mock chỉ đoán ngẫu nhiên, nên số lần báo lúc này không có ý nghĩa. Khi có model thật của Sơn, chạy video demo và chỉnh `min_score` / `confirm_frames` cho cân bằng giữa bỏ sót và báo nhầm.
-4. **Đổi model:** khai báo trong `mock_inference_test/src/models.h`, sửa `kAppModel` ở đầu `src/main.cpp` nếu model không đứng đầu danh sách.
+4. **Đổi model:** model thật của Sơn tự được dùng khi có `04_tinyml_optimization/traffic_sign_model_int8.h` (mục "Model nào chạy được"). Model khác: khai báo trong `mock_inference_test/src/models.h`, sửa `kAppModel` ở đầu `src/main.cpp` nếu model không đứng đầu danh sách. Kiểm tra dòng `CSV,model` trong log có đúng loại (`classifier` / `ssd`) và đúng số anchor.
 
 ## Lưu ý kỹ thuật
 

@@ -1,7 +1,7 @@
 // Firmware cảnh báo biển báo — CE340 Edge AI Traffic Sign (ESP32-S3-CAM N16R8)
 //
 // Đây là chương trình demo thật (khác mock_inference_test chỉ để đo):
-//   camera → cắt vùng ROI góc trên-phải → model phân loại → quy tắc chống báo nhầm → OLED + LED + buzzer
+//   camera → cắt vùng ROI góc trên-phải → model (classifier hoặc MobileNetV2-SSD, tự nhận) → quy tắc chống báo nhầm → OLED + LED + buzzer
 //
 // Chia 2 task để cảnh báo không làm chậm nhận diện:
 //   - inference_task (core 1): chụp, kiểm tra camera bị che, tiền xử lý, Invoke, quyết định có báo không.
@@ -39,6 +39,7 @@
 #include "camera_sensor.h"  // mock_inference_test/src
 #include "alert_policy.h"
 #include "frame_quality.h"
+#include "model_output.h"
 #include "i2c_scan.h"
 #include "sim_scenario.h"
 
@@ -59,6 +60,7 @@ constexpr int kRoiSide = 160;                 // 0 = dùng cả khung hình rồ
 constexpr uint32_t kAlertShowMs = 3000;       // giữ màn hình cảnh báo bao lâu
 constexpr int64_t kStatusPeriodUs = 1000000;  // in CSV,status và cập nhật FPS mỗi giây
 constexpr size_t kProbeArenaSize = 2 * 1024 * 1024;
+constexpr int kNumSignClasses = 12;            // 12 lớp trong classes.yaml (lớp nền / "không phải biển" nằm sau)
 
 // ---------------- Thông điệp giữa 2 task ----------------
 enum class MsgKind : uint8_t { kSign, kBlocked, kUnblocked };
@@ -340,33 +342,59 @@ bool preprocess(const camera_fb_t *fb, const InputSpec &s, const PixelLut &lut, 
   }
 }
 
-// Đầu ra → (lớp, điểm 0..1). Nếu model đã có softmax thì giữ nguyên, nếu chưa thì tự tính softmax.
-void classify(const TfLiteTensor *out, int &top, float &score) {
-  int n = 1;
-  for (int i = 0; i < out->dims->size; ++i) n *= out->dims->data[i];
-  n = std::min(n, 64);
-  float v[64];
-  for (int i = 0; i < n; ++i) {
-    switch (out->type) {
-      case kTfLiteInt8: v[i] = (out->data.int8[i] - out->params.zero_point) * out->params.scale; break;
-      case kTfLiteUInt8: v[i] = (out->data.uint8[i] - out->params.zero_point) * out->params.scale; break;
-      default: v[i] = out->data.f[i]; break;
+// ---------------- Giải mã đầu ra (model_output.h) ----------------
+
+ce340::TensorView view_of(const TfLiteTensor *t) {
+  ce340::TensorView v;
+  v.data = t->data.raw;
+  v.type = t->type == kTfLiteInt8    ? ce340::ElemType::kInt8
+           : t->type == kTfLiteUInt8 ? ce340::ElemType::kUInt8
+                                     : ce340::ElemType::kFloat32;
+  v.scale = t->params.scale;
+  v.zero_point = t->params.zero_point;
+  v.ndims = std::min(t->dims->size, 4);
+  for (int i = 0; i < v.ndims; ++i) v.dims[i] = t->dims->data[i];
+  return v;
+}
+
+ce340::OutputLayout g_layout;
+float *g_anchors = nullptr;  // chỉ dùng với SSD: số anchor × 4 float (cx, cy, w, h)
+
+// Nhận dạng model là classifier hay MobileNetV2-SSD theo shape đầu ra. Với SSD sinh sẵn bảng anchor.
+bool setup_decoder(tflite::MicroInterpreter *interp, const ModelEntry &m) {
+  const size_t n_out = interp->outputs_size();
+  ce340::TensorView outs[2];
+  for (size_t i = 0; i < std::min<size_t>(n_out, 2); ++i) outs[i] = view_of(interp->output(i));
+  const TfLiteTensor *in = interp->input(0);
+  const int in_h = in->dims->size == 4 ? in->dims->data[1] : 0;
+  const int in_w = in->dims->size == 4 ? in->dims->data[2] : 0;
+  g_layout = ce340::detect_layout(outs, static_cast<int>(n_out), in_h, in_w, kNumSignClasses);
+  if (g_layout.kind == ce340::OutputKind::kUnknown) {
+    ESP_LOGE(TAG, "[%s] đầu ra không hỗ trợ: %s", m.name, g_layout.error);
+    return false;
+  }
+  if (g_layout.kind == ce340::OutputKind::kSsd) {
+    const size_t bytes = static_cast<size_t>(g_layout.anchors) * 4 * sizeof(float);
+    g_anchors = static_cast<float *>(heap_caps_malloc(bytes, MALLOC_CAP_SPIRAM));
+    if (!g_anchors) g_anchors = static_cast<float *>(heap_caps_malloc(bytes, MALLOC_CAP_8BIT));
+    if (!g_anchors) {
+      ESP_LOGE(TAG, "[%s] không đủ RAM cho %d anchor", m.name, g_layout.anchors);
+      return false;
     }
+    ce340::ssd_build_anchors(in_h, g_anchors);
   }
-  float sum = 0, mn = v[0], mx = v[0];
-  for (int i = 0; i < n; ++i) {
-    sum += v[i];
-    mn = std::min(mn, v[i]);
-    mx = std::max(mx, v[i]);
+  std::printf("CSV,model,%s,%s,%dx%d,%d,%u\n", m.name, ce340::kind_name(g_layout.kind), in_w, in_h, g_layout.anchors,
+              m.len);
+  return true;
+}
+
+// Kết quả 1 khung: lớp có điểm cao nhất (classifier) hoặc phát hiện tốt nhất (SSD).
+ce340::Detection decode(tflite::MicroInterpreter *interp) {
+  if (g_layout.kind == ce340::OutputKind::kSsd) {
+    return ce340::ssd_best(view_of(interp->output(g_layout.cls_index)), view_of(interp->output(g_layout.box_index)),
+                           g_anchors, kNumSignClasses);
   }
-  const bool is_prob = mn >= -0.01f && mx <= 1.01f && sum > 0.9f && sum < 1.1f;
-  if (!is_prob) {
-    float total = 0;
-    for (int i = 0; i < n; ++i) total += (v[i] = std::exp(v[i] - mx));
-    for (int i = 0; i < n; ++i) v[i] /= total;
-  }
-  top = static_cast<int>(std::max_element(v, v + n) - v);
-  score = v[top];
+  return ce340::classify(view_of(interp->output(0)));
 }
 
 // ---------------- Model ----------------
@@ -518,7 +546,9 @@ void inference_task(void *arg) {
     last_top = -1;
     last_score = 0;
     if (ok && interp->Invoke() == kTfLiteOk) {
-      classify(interp->output(0), last_top, last_score);
+      const ce340::Detection det = decode(interp);
+      last_top = det.cls;
+      last_score = det.score;
 #if CE340_SIM
       // Model mock chỉ đoán ngẫu nhiên → dùng "kết quả model" do kịch bản quy định
       // (Invoke vẫn chạy thật để đo tốc độ).
@@ -575,8 +605,9 @@ extern "C" void app_main(void) {
     ESP_LOGE(TAG, "kAppModel vượt quá số model trong models.h");
     return;
   }
+  std::printf("CSV,#model,name,kind,input,anchors,size_bytes\n");
   tflite::MicroInterpreter *interp = load_model(kModels[kAppModel]);
-  if (!interp) {
+  if (!interp || !setup_decoder(interp, kModels[kAppModel])) {
     render_message("LOI MODEL", "Xem log Serial");
     return;
   }
