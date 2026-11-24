@@ -2,7 +2,7 @@
 
 * **Người phụ trách:** Vũ Văn Duy (`26410031`) — Kỹ sư Nhúng & Thực nghiệm
 * **Đọc trong 10 phút.** Mỗi mục: *làm gì → vì sao → đang ở đâu*. Cuối file có các câu Thầy hay hỏi và bảng thuật ngữ.
-* Cập nhật: 20/11/2026.
+* Cập nhật: 24/11/2026.
 
 ---
 
@@ -150,6 +150,7 @@ Kịch bản mô phỏng kiểm tra đúng các tình huống: biển thoáng qu
 | Chọn bo, danh sách linh kiện, sơ đồ chân `[D1]` | ✅ Xong, trưởng nhóm đã duyệt 19/11, **đã đặt hàng 20/11** |
 | Chương trình đo `[D2]` | ✅ Build thành công (Flash ~650 KB / 6 MB) — **chưa chạy trên bo thật** |
 | Chương trình cảnh báo | ✅ Build thành công (RAM 8,9%, Flash ~592 KB) — logic đạt 10/10 kiểm thử + mô phỏng đúng kịch bản — **chưa chạy trên bo thật** |
+| Chuẩn bị nạp model thật `[D4]` | ✅ Firmware tự nhận model **classifier** hoặc **MobileNetV2-SSD** (giải mã SSD ngay trên chip, anchor giống hệt code Python của Trung) và tự dùng file model của Sơn khi có. Kiểm thử 16/16 so với code Python. Build với model SSD 160 (2,9 MB): Flash 3,5 MB / 6 MB. Phát hiện script lượng tử hoá phải export **batch = 1**, nếu không TFLite Micro không chạy được model |
 | Lắp mạch, smoke test `[D3]` | ⏳ Chờ linh kiện về |
 | Nạp model thật, đo FPS/độ trễ/mA `[D4]` | ⏳ Chờ linh kiện + file model `.h` của Sơn `[S4]` |
 
