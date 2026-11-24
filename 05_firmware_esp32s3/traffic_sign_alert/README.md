@@ -48,11 +48,37 @@ Build đã kiểm chứng: **SUCCESS**, RAM 8,9%, Flash ~577 KB / 6 MB. **Chưa 
 
 | Dòng | Khi nào | Cột |
 |---|---|---|
+| `CSV,sensor,...` | lúc khởi động | tên cảm biến camera thật (`OV2640` / `OV3660` / `OV5640`), mã PID |
+| `CSV,i2c,...` | lúc khởi động | cổng I2C và các địa chỉ trả lời — OLED đúng dây sẽ có `0x3C` |
 | `CSV,status,...` | mỗi giây | `t_ms, fps, top, score, brightness, sharpness, blocked, speed_class` |
 | `CSV,alert,...` | mỗi lần cảnh báo | `t_ms, class, qcvn, score` |
 | `CSV,blocked,...` | khi camera bị che / hết che | `t_ms, state` |
 
 Khi phát lại video đường phố trước camera (Mục 7.1 file tình huống), đối chiếu thời điểm các dòng `CSV,alert` với các biển có trong video để đếm **báo đúng / bỏ sót / báo nhầm**.
+
+## Mô phỏng khi chưa có bo
+
+Camera không mô phỏng được, nên thay bằng **kịch bản** trong [`src/sim_scenario.h`](src/sim_scenario.h): mỗi bước quy định ảnh giả (bình thường / tối đen như bị che) và "model nhìn thấy biển gì, điểm bao nhiêu". Phần còn lại — đo độ sáng/độ nét, phát hiện camera bị che, quy tắc chống báo nhầm, OLED/LED/buzzer — là **code thật**. Kịch bản ~30 giây gồm: biển thoáng qua 2 khung, điểm thấp, biển cấm thật, gặp lại trong 10 giây, biển tốc độ 50, đi chậm, lấy tay che camera, biển tốc độ 40.
+
+**Cách 1 — chạy ngay trên máy tính (không cần cài gì thêm):**
+
+```bash
+c++ -std=c++17 -I05_firmware_esp32s3/traffic_sign_alert/src -I05_firmware_esp32s3/peripherals_test/src 05_firmware_esp32s3/traffic_sign_alert/host_tests/sim_run.cpp -o /tmp/sim_run && /tmp/sim_run
+```
+
+In ra dòng thời gian "lúc nào OLED hiện gì, LED/còi làm gì", cuối cùng tự kiểm tra: phải có đúng 4 lần cảnh báo + 1 lần báo camera bị che. Hiện **đúng như mong đợi**.
+
+**Cách 2 — xem màn hình OLED, LED, còi chạy trên Wokwi (VS Code):**
+
+1. Cài extension **Wokwi Simulator** trong VS Code, đăng nhập Wokwi và lấy license miễn phí theo hướng dẫn của extension.
+2. Build bản mô phỏng (không dùng camera, không dùng PSRAM):
+   ```bash
+   ./05_firmware_esp32s3/pio.sh traffic_sign_alert run -e wokwi
+   ```
+3. Mở thư mục `~/ce340-build/05_firmware_esp32s3/traffic_sign_alert` trong VS Code (firmware nằm ở thư mục gương do `pio.sh` tạo), mở `diagram.json` → bấm ▶. Sơ đồ mạch giống `peripherals_test` của Hôn.
+4. Log Serial có thêm dòng `CSV,sim,...` báo đang ở bước nào của kịch bản để đối chiếu với màn hình.
+
+Build bản Wokwi đã kiểm chứng: **SUCCESS**. **Chưa chạy thử trên Wokwi** (máy chưa cài extension). `pio.sh traffic_sign_alert` / `run -t upload` mặc định vẫn chỉ build và nạp bản cho bo thật.
 
 ## Kiểm thử logic trên máy tính (không cần bo)
 
@@ -64,7 +90,9 @@ c++ -std=c++17 -I05_firmware_esp32s3/traffic_sign_alert/src 05_firmware_esp32s3/
 
 ## Khi có bo
 
-1. Nạp, kiểm tra OLED hiện "DANG QUAN SAT", buzzer kêu chào lúc khởi động.
+1. Nạp, kiểm tra OLED hiện "DANG QUAN SAT", buzzer kêu chào lúc khởi động. Trong log tìm:
+   - `CSV,i2c,0,0x3C` → OLED đúng dây (tiêu chí nghiệm thu `[D3]`). Không thấy `0x3C` → kiểm tra thứ tự chân VCC/GND/SCL/SDA in trên module.
+   - `CSV,sensor,OV3660,...` (hoặc OV2640) → loại camera thật. Đưa một biển báo vào **góc trên-phải** khung hình và xem cột `top` trong `CSV,status` có đổi không; nếu ảnh vẫn ngược, chỉnh `set_vflip` / `set_hmirror` trong `mock_inference_test/src/camera_sensor.h`.
 2. **Hiệu chỉnh ngưỡng camera bị che:** xem cột `brightness`, `sharpness` trong `CSV,status` lúc camera nhìn bình thường và lúc lấy tay che → sửa `dark_below`, `flat_below` trong `src/frame_quality.h`.
 3. **Ngưỡng điểm `min_score`:** model mock chỉ đoán ngẫu nhiên, nên số lần báo lúc này không có ý nghĩa. Khi có model thật của Sơn, chạy video demo và chỉnh `min_score` / `confirm_frames` cho cân bằng giữa bỏ sót và báo nhầm.
 4. **Đổi model:** khai báo trong `mock_inference_test/src/models.h`, sửa `kAppModel` ở đầu `src/main.cpp` nếu model không đứng đầu danh sách.

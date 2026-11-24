@@ -36,8 +36,17 @@
 #include "led_alert.h"      // peripherals_test/src (Hôn)
 #include "sh1106_oled.h"    // peripherals_test/src (Hôn)
 #include "sign_icons.h"     // peripherals_test/src (Hôn): kSigns[12] + icon 32x32
+#include "camera_sensor.h"  // mock_inference_test/src
 #include "alert_policy.h"
 #include "frame_quality.h"
+#include "i2c_scan.h"
+#include "sim_scenario.h"
+
+// CE340_SIM=1 (env "wokwi" trong platformio.ini): không dùng camera, thay bằng ảnh giả + kịch bản
+// trong sim_scenario.h. Mọi phần còn lại (model, chống báo nhầm, OLED/LED/buzzer) chạy như thật.
+#ifndef CE340_SIM
+#define CE340_SIM 0
+#endif
 
 namespace {
 
@@ -207,6 +216,11 @@ void alert_task(void *) {
 // ---------------- Camera ----------------
 
 bool init_camera() {
+#if CE340_SIM
+  ESP_LOGW(TAG, "CHẾ ĐỘ MÔ PHỎNG: không dùng camera, chạy kịch bản %u bước (%.1f giây/vòng)",
+           (unsigned)ce340::kSimSteps, ce340::sim_cycle_ms() / 1000.0);
+  return true;
+#endif
   camera_config_t c = {};
   c.pin_pwdn = CAM_PIN_PWDN;
   c.pin_reset = CAM_PIN_RESET;
@@ -240,6 +254,7 @@ bool init_camera() {
     ESP_LOGE(TAG, "Camera init lỗi 0x%x — kiểm tra cáp camera / board_pins.h", err);
     return false;
   }
+  ce340::tune_camera_sensor();  // OV2640 / OV3660 / OV5640: in tên + chỉnh chiều ảnh
   return true;
 }
 
@@ -395,9 +410,14 @@ tflite::MicroInterpreter *load_model(const ModelEntry &m) {
   }
   size_t used = 0;
   {
-    auto *probe = static_cast<uint8_t *>(heap_caps_aligned_alloc(16, kProbeArenaSize, MALLOC_CAP_SPIRAM));
+    size_t probe_size = kProbeArenaSize;
+    auto *probe = static_cast<uint8_t *>(heap_caps_aligned_alloc(16, probe_size, MALLOC_CAP_SPIRAM));
+    if (!probe) {  // không có PSRAM (bản mô phỏng Wokwi) → dò trong SRAM, đủ cho model nhỏ
+      probe_size = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT) * 3 / 4;
+      probe = static_cast<uint8_t *>(heap_caps_aligned_alloc(16, probe_size, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT));
+    }
     if (!probe) return nullptr;
-    tflite::MicroInterpreter tmp(model, resolver(), probe, kProbeArenaSize);
+    tflite::MicroInterpreter tmp(model, resolver(), probe, probe_size);
     if (tmp.AllocateTensors() == kTfLiteOk) used = tmp.arena_used_bytes();
     heap_caps_free(probe);
   }
@@ -440,20 +460,53 @@ void inference_task(void *arg) {
   ce340::FrameStats last_stats;
   int64_t window_start = now_us();
 
+#if CE340_SIM
+  constexpr int kSimW = 160, kSimH = 160;  // ảnh giả nhỏ, vừa SRAM (bản mô phỏng không có PSRAM)
+  auto *sim_buf = static_cast<uint8_t *>(heap_caps_malloc(kSimW * kSimH * 2, MALLOC_CAP_8BIT));
+  if (!sim_buf) {
+    ESP_LOGE(TAG, "Không đủ RAM cho ảnh mô phỏng");
+    vTaskDelete(nullptr);
+  }
+  const uint32_t sim_t0 = now_ms();
+  uint32_t sim_frame_no = 0;
+  size_t sim_last = ce340::kSimSteps;
+  std::printf("CSV,#sim,t_ms,step,situation,expect\n");
+#endif
+
   for (;;) {
+#if CE340_SIM
+    const uint32_t t_ms = now_ms();
+    const size_t si = ce340::sim_step_index(t_ms - sim_t0);
+    const ce340::SimStep &step = ce340::kSimScenario[si];
+    if (si != sim_last) {
+      std::printf("CSV,sim,%" PRIu32 ",%u,%s,%s\n", t_ms, (unsigned)si, step.what, step.expect);
+      sim_last = si;
+    }
+    ce340::sim_fill_frame(sim_buf, kSimW, kSimH, step.frame, sim_frame_no++);
+    camera_fb_t sim_fb = {};
+    sim_fb.buf = sim_buf;
+    sim_fb.len = kSimW * kSimH * 2;
+    sim_fb.width = kSimW;
+    sim_fb.height = kSimH;
+    sim_fb.format = PIXFORMAT_RGB565;
+    camera_fb_t *fb = &sim_fb;
+#else
     camera_fb_t *fb = esp_camera_fb_get();
     if (!fb) {
       vTaskDelay(pdMS_TO_TICKS(10));
       continue;
     }
     const uint32_t t_ms = now_ms();
+#endif
     last_stats = ce340::measure_frame(fb->buf, fb->width, fb->height);
     const bool was_blocked = detector.blocked();
     const bool blocked = detector.update(last_stats, t_ms);
 
     bool ok = false;
     if (!blocked) ok = preprocess(fb, spec, lut, interp->input(0));
+#if !CE340_SIM
     esp_camera_fb_return(fb);  // trả frame sớm để camera chụp tiếp trong lúc Invoke
+#endif
 
     if (blocked != was_blocked) {
       policy.reset();
@@ -466,6 +519,12 @@ void inference_task(void *arg) {
     last_score = 0;
     if (ok && interp->Invoke() == kTfLiteOk) {
       classify(interp->output(0), last_top, last_score);
+#if CE340_SIM
+      // Model mock chỉ đoán ngẫu nhiên → dùng "kết quả model" do kịch bản quy định
+      // (Invoke vẫn chạy thật để đo tốc độ).
+      last_top = step.cls;
+      last_score = step.score;
+#endif
       const int cls = policy.update(last_top, last_score, t_ms);
       if (cls >= 0) {
         AlertMsg msg{MsgKind::kSign, cls, last_score};
@@ -486,7 +545,11 @@ void inference_task(void *arg) {
       frames = 0;
       window_start = t;
     }
+#if CE340_SIM
+    vTaskDelay(pdMS_TO_TICKS(100));  // ~10 khung/giây như camera thật
+#else
     vTaskDelay(1);  // nhường CPU cho task IDLE (watchdog)
+#endif
   }
 }
 
@@ -500,6 +563,7 @@ extern "C" void app_main(void) {
   const bool led_ok = g_led.init();
   g_btn.init();
   ESP_LOGI(TAG, "OLED=%s Buzzer=%s LED=%s", g_oled_ok ? "OK" : "LOI", bz_ok ? "OK" : "LOI", led_ok ? "OK" : "LOI");
+  if (g_oled_ok) ce340::i2c_scan(I2C_NUM_0);  // OLED đúng dây → thấy 0x3C
   render_message("CE340 EDGE AI", "Dang khoi dong...");
   g_buzzer.chirp_boot();
 

@@ -1,0 +1,7 @@
+# Mô phỏng traffic_sign_alert trên Wokwi (extension "Wokwi Simulator" trong VS Code).
+# Build trước:  ./05_firmware_esp32s3/pio.sh traffic_sign_alert run -e wokwi
+# File firmware nằm ở thư mục gương ($HOME/ce340-build/...) → mở thư mục đó trong VS Code để chạy.
+[wokwi]
+version = 1
+firmware = '.pio/build/wokwi/firmware.bin'
+elf = '.pio/build/wokwi/firmware.elf'

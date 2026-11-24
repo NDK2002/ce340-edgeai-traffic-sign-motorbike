@@ -38,6 +38,7 @@
 #include "tensorflow/lite/micro/schema/schema_generated.h"  // esp-tflite-micro >= 1.4
 
 #include "board_pins.h"
+#include "camera_sensor.h"
 #include "models.h"
 
 namespace {
@@ -329,6 +330,7 @@ bool init_camera() {
     return false;
   }
   ESP_LOGI(TAG, "Camera init OK (RGB565)");
+  ce340::tune_camera_sensor();  // OV2640 / OV3660 / OV5640: in tên + chỉnh chiều ảnh
   return true;
 }
 
