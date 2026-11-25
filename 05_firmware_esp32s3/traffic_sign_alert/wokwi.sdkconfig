@@ -1,0 +1,3 @@
+# Chỉ dùng cho env "wokwi" (mô phỏng): Wokwi không giả lập Octal PSRAM của module N16R8,
+# nên tắt PSRAM; model mock và ảnh giả 160x160 vừa đủ trong SRAM.
+# CONFIG_SPIRAM is not set

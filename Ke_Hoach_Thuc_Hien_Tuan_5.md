@@ -20,7 +20,7 @@ flowchart TD
     subgraph PHASE1["PHASE 1: DỮ LIỆU THẬT & NHẬN PHẦN CỨNG (18/11 – 20/11)"]
         K1["[K1] Khang: Remap & Split 12 lớp dataset thật >= 1.000 ảnh (XONG - PR #5)"]
         K2["[K2] Khang: Sinh ảnh Albumentations 4 kịch bản thời tiết (XONG - PR #5)"]
-        D3["[D3] Duy: Nhận linh kiện ESP32-S3-CAM N16R8, cắm breadboard (XONG)"]
+        D3["[D3] Duy: Nhận linh kiện ESP32-S3-CAM N16R8, cắm breadboard (ĐÃ NHẬN BO - CHỜ NẠP THỬ)"]
         H4["[H4] Hôn: Tích hợp driver ngoại vi vào pipeline firmware chính (XONG)"]
     end
 
@@ -116,8 +116,8 @@ flowchart TD
 
 | Mã CV & Hạn | Đầu việc Đồ án | Trạng thái thực tế | Sản phẩm bàn giao cụ thể (Deliverables) | Tiêu chí nghiệm thu (Acceptance Criteria) |
 | :--- | :--- | :---: | :--- | :--- |
-| **`[D3]`**<br>18/11 – 20/11 | Tiếp nhận 1 bo `ESP32-S3-CAM N16R8`, cắm breadboard 830 lỗ hoàn chỉnh theo sơ đồ an toàn | 🟢 **Hoàn thành 100%** | • Mạch vật lý hoàn chỉnh trên breadboard 830 lỗ có tụ lọc nguồn chống sụt áp 220uF–470uF.<br>• Cấu hình BOM tinh gọn (Lean BOM) né triệt để chân PSRAM `GPIO 33–37`.<br>• Tài liệu: `05_firmware_esp32s3/bom_and_hardware_specs.md`. | • Bo mạch khởi động ổn định, nạp được code qua cổng Type-C.<br>• Camera OV2640 chụp ảnh bình thường (không sọc nhiễu, không treo bus).<br>• Quét I2C phát hiện đúng địa chỉ `0x3C` của OLED SH1106. |
-| **`[D4]`**<br>22/11 – 23/11 | Nạp mô hình INT8 thật, chạy suy luận thời gian thực & đo đạc toàn diện các thông số | 🟡 **Sẵn sàng triển khai** | • Dự án firmware hoàn chỉnh: `05_firmware_esp32s3/real_inference_deployment/`<br>• Bảng số liệu đo đạc thực tế: `05_firmware_esp32s3/benchmark_hardware_results.csv`<br>• Video clip ngắn (~1-2 phút) quay cảnh bo mạch nhận diện biển báo thật trên bàn test. | • Tốc độ suy luận đạt $\ge 5 - 10\text{ FPS}$ (Pipeline ROI).<br>• Tổng độ trễ từ lúc chụp đến hiển thị cảnh báo $< 150\text{ ms}$.<br>• Đo đạc chính xác: RAM chiếm dụng (SRAM vs PSRAM), Flash chiếm dụng, Dòng tiêu thụ (mA). |
+| **`[D3]`**<br>18/11 – 26/11 | Tiếp nhận 1 bo `ESP32-S3-CAM N16R8`, cắm breadboard 830 lỗ hoàn chỉnh theo sơ đồ an toàn | 🟡 **Đã nhận bo — chờ nạp thử** | • Mạch vật lý hoàn chỉnh trên breadboard 830 lỗ có tụ lọc nguồn chống sụt áp 220uF–470uF.<br>• Cấu hình BOM tinh gọn (Lean BOM) né triệt để chân PSRAM `GPIO 33–37`.<br>• Tài liệu: `05_firmware_esp32s3/bom_and_hardware_specs.md`.<br>• Log nghiệm thu: nạp `mock_inference_test` và `traffic_sign_alert`, lưu log Serial. | • Bo mạch khởi động ổn định, nạp được code qua cổng Type-C, log `CSV,hw` báo đúng Flash 16 MB / PSRAM 8 MB.<br>• Camera chụp ảnh bình thường (không sọc nhiễu, không treo bus): log `CSV,sensor` và `CSV,camera` có số liệu.<br>• Quét I2C phát hiện đúng địa chỉ `0x3C` của OLED SH1106: log `CSV,i2c,0,0x3C`. |
+| **`[D4]`**<br>25/11 – 01/12 | Nạp mô hình INT8 thật, chạy suy luận thời gian thực & đo đạc toàn diện các thông số | 🟡 **Firmware sẵn sàng — chờ `[S4]` và `[D3]`** | • Firmware demo: `05_firmware_esp32s3/traffic_sign_alert/` (tự nhận model classifier hoặc MobileNetV2-SSD, tự dùng `04_tinyml_optimization/traffic_sign_model_int8.h` khi có, kiểm thử bộ giải mã 16/16).<br>• Firmware đo: `05_firmware_esp32s3/mock_inference_test/` (arena SRAM/PSRAM, độ trễ từng khâu, soak 30 phút để đo mA).<br>• Bảng số liệu đo đạc thực tế: `05_firmware_esp32s3/benchmark_hardware_results.csv` (sinh bằng `tools/bench_report.py` từ `bench.csv`).<br>• Video clip ngắn (~1-2 phút) quay cảnh bo mạch nhận diện biển báo thật trên bàn test. | • Tốc độ suy luận đạt $\ge 5 - 10\text{ FPS}$ (Pipeline ROI).<br>• Độ trễ 1 khung (từ lúc chụp đến khi có kết quả model) $< 150\text{ ms}$. Thời gian đến lúc phát cảnh báo ≈ 3 khung do quy tắc chống báo nhầm.<br>• Đo đạc chính xác: RAM chiếm dụng (SRAM vs PSRAM), Flash chiếm dụng, Dòng tiêu thụ (mA).<br>• Điều kiện đầu vào: model của `[S4]` export với batch = 1 (batch động thì TFLite Micro lỗi `RESHAPE` ngay khi cấp phát). |
 
 ---
 
@@ -159,11 +159,13 @@ Mỗi phân hệ chỉ được xem là hoàn thành khi thỏa mãn đầy đ�
   - [ ] Mức suy giảm mAP sau lượng tử hóa $\le 3.0\%$.
   - [ ] File header `04_tinyml_optimization/traffic_sign_model_int8.h` (`alignas(16)`) biên dịch tương thích 100% với firmware nhúng.
 
-- [ ] **4. Phần cứng & Firmware thực nghiệm (`[D3]`, `[D4]`):** *(PHẦN CỨNG SẴN SÀNG — CHỜ NẠP MODEL)*
-  - [x] Mạch thật cắm hoàn chỉnh trên breadboard 830 lỗ: `ESP32-S3-CAM N16R8`, `SH1106 OLED 1.3"`, `Buzzer passive PWM`, `LED đỏ`, `Button Mute`, `Tụ lọc nguồn 220uF–470uF`.
-  - [x] Đi dây an toàn, né hoàn toàn dải bus PSRAM `GPIO 33–37`.
+- [ ] **4. Phần cứng & Firmware thực nghiệm (`[D3]`, `[D4]`):** *(ĐÃ NHẬN BO — CHỜ NẠP THỬ & MODEL THẬT)*
+  - [ ] Mạch thật cắm hoàn chỉnh trên breadboard 830 lỗ: `ESP32-S3-CAM N16R8`, `SH1106 OLED 1.3"`, `Buzzer passive PWM`, `LED đỏ`, `Button Mute`, `Tụ lọc nguồn 220uF–470uF`.
+  - [ ] Đi dây an toàn, né hoàn toàn dải bus PSRAM `GPIO 33–37`.
+  - [ ] Nạp thử `mock_inference_test` và `traffic_sign_alert`, lưu log nghiệm thu `[D3]` (`CSV,hw`, `CSV,sensor`, `CSV,i2c`).
+  - [x] Firmware demo và firmware đo build sạch, sẵn sàng nhận model thật (classifier hoặc MobileNetV2-SSD).
   - [ ] Nạp firmware chạy suy luận mô hình thật, hiển thị kết quả lên OLED và phát còi cảnh báo chính xác.
-  - [ ] Đo đạc thực tế: FPS $\ge 5 - 10$, Latency tổng $< 150\text{ ms}$, RAM/PSRAM, Dòng điện tiêu thụ (mA).
+  - [ ] Đo đạc thực tế: FPS $\ge 5 - 10$, độ trễ 1 khung $< 150\text{ ms}$, RAM/PSRAM, Dòng điện tiêu thụ (mA).
   - [ ] Có video clip ngắn minh chứng hoạt động thực tế trên bàn test.
 
 - [ ] **5. Quản trị & Báo cáo tiến độ (`[H4]`, `[H5]`, `[H6]`):** *(ĐANG TIẾN HÀNH)*

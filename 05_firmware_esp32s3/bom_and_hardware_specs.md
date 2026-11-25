@@ -38,6 +38,8 @@
 
 **OV2640 hay OV5640?** Cả hai cắm chung một cổng camera và thư viện `esp32-camera` tự nhận loại cảm biến, nên firmware không cần sửa. Nhưng model AI chỉ nhìn ảnh 160×160, nên độ phân giải 5MP của OV5640 không giúp gì, lại tốn điện và nóng hơn. → **Chọn OV2640** nếu có; chỉ lấy OV5640 khi shop hết bản OV2640.
 
+**OV3660 (3MP)** cũng dùng được: nhiều shop bán bo N16R8 kèm OV3660 với giá tương đương. OV3660 mặc định cho ảnh lộn ngược, nên firmware (`mock_inference_test/src/camera_sensor.h`) tự nhận loại cảm biến lúc khởi động, in dòng `CSV,sensor,<tên>,<PID>` và lật ảnh lại cho đúng. Tên trên trang shop có thể ghi sai loại camera → xem dòng `CSV,sensor` để biết loại thật.
+
 Không shop nào ở trên ghi sơ đồ chân camera, nên vẫn phải kiểm tra bằng firmware `mock_inference_test` khi nhận hàng (Mục 6).
 
 👉 **Chốt mua 1 bo:** Hệ thống chỉ cần duy nhất **1 bo ESP32-S3-CAM N16R8** là hoạt động đầy đủ 100% tính năng (chụp ảnh, chạy AI INT8, OLED, còi PWM, log thẻ nhớ). Việc chốt 1 bo giúp tiết kiệm ngay ~200k–250k cho nhóm. Để an toàn, luôn rút cáp USB Type-C ra trước khi cắm/rút dây trên breadboard; chỉ mua thêm bo thứ 2 nếu nhóm còn dư dả quỹ.
@@ -63,10 +65,10 @@ Chia 4 nhóm: **A–B mua ngay** (test trên bàn Tuần 5–6), **C mua khi g�
 | # | Linh kiện | SL | Ghi chú chọn mua | Giá ước tính |
 |---|---|:---:|---|---:|
 | B1 | **OLED 1.3" I2C 128×64, chip SH1106, màu trắng** | 1 | Loại **4 chân I2C** (không lấy SPI 7 chân). Chọn **màu trắng một màu** — sáng và tương phản tốt hơn loại 2 màu vàng/xanh. ⚠️ Đọc thứ tự chân in trên module trước khi cắm (`VCC GND SCL SDA` hoặc `GND VCC SCL SDA`) | 80–100k |
-| B4 | **Buzzer passive 5V** Ø12 mm | 1–2 | Còi thụ động phát xung PWM đa âm điệu (cấm: dồn dập; cảnh báo: ngắt quãng; hiệu lệnh: 1 bíp). ⚠️ **Không mua Active Buzzer** vì chỉ kêu được 1 tiếng đơn điệu | 5–10k |
-| B4b | Transistor NPN **S8050** + điện trở 1kΩ | 1–2 | Mạch đệm kích dòng từ GPIO 3.3V điều khiển còi 5V | 5k |
+| B4 | **Buzzer passive 5V** Ø12 mm | 1–2 | Còi thụ động phát xung PWM đa âm điệu (cấm: dồn dập; cảnh báo: ngắt quãng; hiệu lệnh: 1 bíp). ⚠️ **Không mua Active Buzzer** vì chỉ kêu được 1 tiếng đơn điệu. Trên Shopee, set "TMB12A03/05/12" là **active**; loại passive thường ghi **"16R" / 16Ω**. Kiểm tra khi nhận: mặt dưới lộ mạch xanh, đo 2 chân ≈ 16Ω | 5–10k |
+| B4b | Transistor NPN **S8050** + điện trở 1kΩ (+ 100Ω) | 1–2 | Mạch đệm kích dòng từ GPIO 3.3V điều khiển còi 5V. Buzzer 16Ω: mắc nối tiếp thêm **100Ω** để bớt chói và đỡ nóng transistor. Điện trở chọn loại 4 vòng 5% là đủ | 5k |
 | B5 | **LED đỏ siêu sáng 5mm** + điện trở 220–330Ω | 2–5 | Cảnh báo thị giác chớp nháy khi đi đường ồn ào | 5k |
-| B6 | *(Tùy chọn)* Nút nhấn mini 6×6 mm | 1 | Nút Mute ngắt cảnh báo âm thanh (nối GPIO47) | 5k |
+| B6 | *(Tùy chọn)* Nút nhấn mini 6×6 mm | 1 | Nút Mute ngắt cảnh báo âm thanh (nối GPIO47 ↔ GND, không cần điện trở — firmware bật điện trở kéo lên bên trong). Nên lấy loại cao 5–7 mm (`6x6x5`) cho dễ bấm; loại `6x6x3.1` vẫn chạy nhưng núm rất thấp | 5k |
 
 ![Hình minh hoạ các linh kiện nhóm B để nhận dạng khi mua](images/bom_group_b.svg)
 
@@ -141,7 +143,7 @@ Chia 4 nhóm: **A–B mua ngay** (test trên bàn Tuần 5–6), **C mua khi g�
 | OLED 1.3" SDA | `41` | Nối SDA của OLED |
 | OLED 1.3" SCL | `42` | Nối SCL của OLED |
 | OLED 1.3" VCC / GND | `3V3` / `GND` | Cấp 3.3V. **Đọc thứ tự chân in trên module** — loại 1.3" thường là `VCC GND SCL SDA` |
-| Buzzer passive (qua S8050) | `14` | GPIO14 (xuất xung PWM để tạo tiếng) → R 1kΩ → B của S8050; E → GND; C → chân (−) buzzer; chân (+) buzzer → `5V` |
+| Buzzer passive (qua S8050) | `14` | GPIO14 (xuất xung PWM để tạo tiếng) → R 1kΩ → B của S8050; E → GND; C → chân (−) buzzer; chân (+) buzzer → R 100Ω → `5V` (buzzer 16Ω; bỏ R 100Ω nếu tiếng quá nhỏ) |
 | LED cảnh báo | `21` | GPIO21 → R 330Ω → LED (+); LED (−) → GND |
 | Nút nhấn (tùy chọn: tắt cảnh báo) | `47` | Nút nối GPIO47 ↔ GND, bật pull-up nội |
 
