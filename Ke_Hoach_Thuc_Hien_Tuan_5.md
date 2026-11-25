@@ -2,7 +2,7 @@
 ## MÔN: TRÍ TUỆ NHÂN TẠO CHO HỆ THỐNG NHÚNG (`CE340`) — ĐỀ TÀI EDGE AI & TINYML
 
 > **Khoảng thời gian:** Thứ Tư `18/11/2026` – Thứ Ba `24/11/2026` *(Tuần 5 — Chuyển dịch toàn diện từ Mock Stub sang **Dữ liệu thật & Phần cứng thật**)*  
-> **Trạng thái tài liệu:** 🟡 **CẬP NHẬT TIẾN ĐỘ THỰC TẾ (24/11/2026)** — Đã hoàn thành nghiệm thu Dữ liệu thật & Augmentation (`[K1][K2]` PR #5), chốt phần cứng breadboard an toàn (`[D3]`), tích hợp ngoại vi (`[H4]`), và hoàn thiện kiểm duyệt script PTQ INT8 (`[S3]` PR #7). Đang hoàn tất huấn luyện GPU (`[T3][T4]`) và nạp kit thực nghiệm (`[D4]`) để xuất số liệu cho Báo cáo tiến độ Tuần 1.  
+> **Trạng thái tài liệu:** 🟢 **TỔNG KẾT TIẾN ĐỘ TUẦN 5 (25/11/2026)** — Đã hoàn thành nghiệm thu toàn diện: Dữ liệu thật & Augmentation (`[K1][K2]` PR #5 Merged), Script lượng tử hóa mô hình thật PTQ INT8 (`[S3]` PR #7 Merged), Firmware cảnh báo demo + mô phỏng Wokwi + giải mã SSD trên chip + công cụ báo cáo benchmark (`[D3][D4]` PR #8 Merged). Sẵn sàng chuyển giao sang Tuần 6 để thực nghiệm trên kit thật và tối ưu TinyML chuyên sâu.  
 > **Tài liệu tham chiếu:** [De_Cuong_Chi_Tiet_Do_An_CE340.md](./De_Cuong_Chi_Tiet_Do_An_CE340.md) | [Ke_Hoach_Thuc_Hien_Tuan_4.md](./Ke_Hoach_Thuc_Hien_Tuan_4.md) | [classes.yaml](./01_dataset/classes.yaml) | [tinyml_toolchain_notes.md](./04_tinyml_optimization/tinyml_toolchain_notes.md) | [bom_and_hardware_specs.md](./05_firmware_esp32s3/bom_and_hardware_specs.md)  
 > **Mục tiêu tối thượng Tuần 5:**
 > 1. Hoàn thành bộ dữ liệu thật $\ge 1.000$ ảnh gán nhãn 12 lớp QCVN 41:2019 kèm tập tăng cường thời tiết phức tạp. *(Đạt)*
@@ -76,7 +76,7 @@ flowchart TD
 | Mã CV & Hạn | Đầu việc Đồ án | Trạng thái thực tế | Sản phẩm bàn giao cụ thể (Deliverables) | Tiêu chí nghiệm thu (Acceptance Criteria) |
 | :--- | :--- | :---: | :--- | :--- |
 | **`[H4]`**<br>18/11 – 20/11 | Tích hợp module ngoại vi ghi-đông (`peripherals_test`) vào dự án firmware chính | 🟢 **Hoàn thành 100%** | • File mã nguồn tích hợp `05_firmware_esp32s3/mock_inference_test/src/board_pins.h`<br>• Khung quản lý tác vụ FreeRTOS (Task Camera & Inference riêng, Task HMI OLED/Buzzer riêng). | • Biên dịch sạch không lỗi trên PlatformIO.<br>• Khi phát hiện nhãn mô phỏng, OLED cập nhật thông tin và còi Buzzer PWM kêu đúng nhịp.<br>• Nút Mute ngắt còi thành công qua cơ chế ngắt/event. |
-| **`[H5]`**<br>22/11 – 23/11 | Điều phối kiểm thử tích hợp phần cứng, QA chéo số liệu AI vs Nhúng & Review PRs | 🟡 **Đang triển khai** | • Đã review và merge **PR #5** (`[K1][K2]` Dữ liệu thật).<br>• Đã review, fix lỗi tensor NCHW và cập nhật comment kỹ thuật trên **PR #7** (`[S3]` PTQ script).<br>• Nhánh `main` GitHub sẵn sàng tích hợp sản phẩm tuần. | • Đảm bảo 100% code trên GitHub chạy được, không lỗi build.<br>• Toàn bộ số liệu mAP, FPS, Latency được đối soát chéo khớp nhau giữa các báo cáo. |
+| **`[H5]`**<br>22/11 – 23/11 | Điều phối kiểm thử tích hợp phần cứng, QA chéo số liệu AI vs Nhúng & Review PRs | 🟢 **Hoàn thành** | • Đã review và merge **PR #5** (`[K1][K2]` Dữ liệu thật).<br>• Đã review và merge **PR #7** (`[S3]` PTQ script INT8).<br>• Đã review và merge **PR #8** (`[D2][D4]` Firmware demo cảnh báo, Wokwi, SSD on-chip decode, bench_report).<br>• Nhánh `main` GitHub sẵn sàng tích hợp sản phẩm tuần. | • Đảm bảo 100% code trên GitHub chạy được, không lỗi build.<br>• Toàn bộ số liệu mAP, FPS, Latency được đối soát chéo khớp nhau giữa các báo cáo. |
 | **`[H6]`**<br>23/11 – 24/11 | Hoàn thiện và nộp **Báo cáo tiến độ Tuần 1 (Đợt Tuần 5)** gửi Giảng viên hướng dẫn | 🟡 **Đang tổng hợp** | • File Báo cáo tiến độ Word & PDF: `06_reports_slides/Bao_Cao_Tuan_5_CE340.docx`<br>• Email / Nộp bài hệ thống đúng hạn trước 23h59 ngày 24/11/2026. | • Đúng mẫu quy định của Khoa KTMT (`Mẫu Báo cáo tuần x.docx`).<br>• Đầy đủ 4 mục: Nội dung, Phân công, Báo cáo quá trình, Kế hoạch tuần tới.<br>• Bảng số liệu định lượng rõ ràng, minh chứng ảnh chụp mạch thật. |
 
 ---
@@ -169,7 +169,7 @@ Mỗi phân hệ chỉ được xem là hoàn thành khi thỏa mãn đầy đ�
   - [ ] Có video clip ngắn minh chứng hoạt động thực tế trên bàn test.
 
 - [ ] **5. Quản trị & Báo cáo tiến độ (`[H4]`, `[H5]`, `[H6]`):** *(ĐANG TIẾN HÀNH)*
-  - [x] Toàn bộ mã nguồn mới được đẩy lên GitHub qua Pull Request (PR #5 merged, PR #7 hoàn thiện code review).
+  - [x] Toàn bộ mã nguồn mới được đẩy lên GitHub qua Pull Request (PR #5, PR #7, PR #8 đã merge thành công vào main).
   - [x] Khung ngoại vi `[H4]` ghép nối thành công vào dự án firmware.
   - [ ] Hoàn thành tài liệu Báo cáo tiến độ Tuần 1 (Word & PDF) đúng quy chuẩn Khoa KTMT.
   - [ ] Nộp báo cáo cho Giảng viên hướng dẫn đúng hạn (trước 23h59 ngày 24/11/2026).

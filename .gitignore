@@ -38,6 +38,7 @@ __pycache__/
 !01_dataset/mock_assets/
 !01_dataset/mock_assets/**
 01_dataset/mock_assets/*.cache
+01_dataset/mock_assets/*.zip
 02_augmentation/outputs/
 
 # Heavy model checkpoints & training runs (keep compact INT8 .tflite / .h stubs)
